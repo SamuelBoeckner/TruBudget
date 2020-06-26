@@ -70,6 +70,8 @@ import * as SubprojectViewHistoryService from "./service/subproject_history_get"
 import * as SubprojectUpdateService from "./service/subproject_update";
 import * as UserAuthenticateService from "./service/user_authenticate";
 import * as UserCreateService from "./service/user_create";
+import * as UserEnableService from "./service/user_enable"; // ##########
+import * as UserDisableService from "./service/user_disable"; // ##########
 import * as UserPasswordChangeService from "./service/user_password_change";
 import * as UserPermissionGrantService from "./service/user_permission_grant";
 import * as UserPermissionRevokeService from "./service/user_permission_revoke";
@@ -102,6 +104,8 @@ import * as SubprojectViewHistoryAPI from "./subproject_view_history";
 import * as SubprojectViewHistoryAPIv2 from "./subproject_view_history_v2";
 import * as UserAuthenticateAPI from "./user_authenticate";
 import * as UserCreateAPI from "./user_create";
+import * as UserEnableAPI from "./user_enable"; // ####
+import * as UserDisableAPI from "./user_disable"; // ####
 import * as UserListAPI from "./user_list";
 import * as UserPasswordChangeAPI from "./user_password_change";
 import * as UserPermissionGrantAPI from "./user_permission_grant";
@@ -294,6 +298,16 @@ UserAuthenticateAPI.addHttpHandler(
 UserCreateAPI.addHttpHandler(server, URL_PREFIX, {
   createUser: (ctx, issuer, reqData) =>
     UserCreateService.createUser(organizationVaultSecret, db, ctx, issuer, reqData),
+});
+
+UserEnableAPI.addHttpHandler(server, URL_PREFIX, {
+  enableUser: (ctx, issuer, reqData) =>
+    UserEnableService.enableUser(organizationVaultSecret, db, ctx, issuer, reqData),
+});
+
+UserDisableAPI.addHttpHandler(server, URL_PREFIX, {
+  disableUser: (ctx, issuer, reqData) =>
+    UserDisableService.disableUser(organizationVaultSecret, db, ctx, issuer, reqData),
 });
 
 UserListAPI.addHttpHandler(server, URL_PREFIX, {
