@@ -30,7 +30,6 @@ export const schema = Joi.object({
   source: Joi.string().allow("").required(),
   time: Joi.date().iso().required(),
   publisher: Joi.string().required(),
-  permission: Joi.valid(userIntents).required(),
   user: initialDataSchema.required(),
 });
 
