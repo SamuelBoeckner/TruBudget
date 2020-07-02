@@ -61,8 +61,6 @@ export async function enableUser(
   // Check authorization (if not root):
   if (issuer.id !== "root") {
     const isAuthorized = GlobalPermissions.permits(currentGlobalPermissions, issuer, [intent]);
-    console.log("CHECK IF ATHORIZED!!!");
-    console.log(isAuthorized);
     if (!isAuthorized) {
       return new NotAuthorized({
         ctx,
@@ -74,9 +72,6 @@ export async function enableUser(
   }
 
   const updatedUser = UserEventSourcing.newUserFromEvent(ctx, user, userEnabled);
-  console.log("next ...!!!");
-  console.log(updatedUser);
-  console.log("newuserFromEvent finished  ...  (enable)!");
   if (Result.isErr(updatedUser)) {
     return new InvalidCommand(ctx, userEnabled, [updatedUser]);
   }
@@ -84,7 +79,6 @@ export async function enableUser(
   if (isEqual(user.permissions, updatedUser.permissions)) {
     return [];
   } else {
-    console.log("perm changed: user_enable");
     return [userEnabled];
   }
 }

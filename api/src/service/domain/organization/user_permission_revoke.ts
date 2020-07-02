@@ -50,9 +50,7 @@ export async function revokeUserPermission(
 
   // Check that the new event is indeed valid:
   const updatedUser = UserEventSourcing.newUserFromEvent(ctx, user, permissionRevoked);
-  console.log("next ...!!!");
-  console.log(updatedUser);
-  console.log("newuserFromEvent finished  ... (revoke) !");
+
   if (Result.isErr(updatedUser)) {
     return new InvalidCommand(ctx, permissionRevoked, [updatedUser]);
   }
@@ -61,8 +59,6 @@ export async function revokeUserPermission(
   if (isEqual(user.permissions, updatedUser.permissions)) {
     return [];
   } else {
-    console.log("perm changed: user_perm_revoke");
-
     return [permissionRevoked];
   }
 }

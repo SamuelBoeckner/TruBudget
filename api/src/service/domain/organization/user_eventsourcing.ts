@@ -30,9 +30,6 @@ export function sourceUserRecords(
     }
 
     const user = sourceEvent(ctx, event, users);
-    // console.log("AN USER  Yesssss !! ");
-    // console.log(Result.isErr(user));
-    // console.log(user);
     if (Result.isErr(user)) {
       errors.push(user);
     } else {
@@ -150,8 +147,6 @@ export function newUserFromEvent(
   const userCopy = copyUserExceptLog(user);
 
   try {
-    // console.log("THE old MODIfied USER is :");
-    // console.log(userCopy);
     // Apply the event to the copied user:
     const mutation = eventModule.mutate(userCopy, eventCopy);
     if (Result.isErr(mutation)) {
@@ -168,9 +163,6 @@ export function newUserFromEvent(
     userCopy.log = user.log;
 
     // Return the modified (and validated) user:
-    console.log("THE NEW MODIfied USER is :");
-    console.log(userCopy);
-
     return userCopy;
   } catch (error) {
     return new EventSourcingError({ ctx, event, target: user }, error);

@@ -70,13 +70,6 @@ export function validate(input: any): Result.Type<Event> {
  * `user_eventsourcing.ts`:`newUserFromEvent`.
  */
 export function mutate(user: UserRecord.UserRecord, event: Event): Result.Type<void> {
-  // console.log(" HEYYYY");
-  // console.log(event.type !== "user_enabled");
-  // console.log("data -user: #######################");
-  // console.log(user);
-  // console.log("data -event : #################### ");
-  // console.log(event);
-
   if (event.type !== "user_enabled") {
     throw new VError(`illegal event type: ${event.type}`);
   }
@@ -86,7 +79,4 @@ export function mutate(user: UserRecord.UserRecord, event: Event): Result.Type<v
 
   // Disabling user
   user.permissions["user.authenticate"] = [];
-
-  // console.log("data -user: NEW  ===================");
-  // console.log(user);
 }
