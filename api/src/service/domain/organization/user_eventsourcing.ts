@@ -6,6 +6,7 @@ import * as Result from "../../../result";
 import { BusinessEvent } from "../business_event";
 import { EventSourcingError } from "../errors/event_sourcing_error";
 import * as UserCreated from "./user_created";
+import * as UserEnabled from "./user_enabled";
 import * as UserPasswordChanged from "./user_password_changed";
 import * as UserPermissionGranted from "./user_permission_granted";
 import * as UserPermissionRevoked from "./user_permission_revoked";
@@ -29,7 +30,9 @@ export function sourceUserRecords(
     }
 
     const user = sourceEvent(ctx, event, users);
-
+    // console.log("AN USER  Yesssss !! ");
+    // console.log(Result.isErr(user));
+    // console.log(user);
     if (Result.isErr(user)) {
       errors.push(user);
     } else {
@@ -104,6 +107,7 @@ function get(
 function getUserId(event: BusinessEvent): Result.Type<UserRecord.Id> {
   switch (event.type) {
     case "user_password_changed":
+    case "user_enabled":
       return event.user.id;
     case "user_permission_granted":
     case "user_permission_revoked":
@@ -125,6 +129,8 @@ function getEventModule(event: BusinessEvent): EventModule {
       return UserPermissionGranted;
     case "user_permission_revoked":
       return UserPermissionRevoked;
+    case "user_enabled":
+      return UserEnabled;
     default:
       throw new VError(`unknown user event ${event.type}`);
   }
@@ -144,6 +150,8 @@ export function newUserFromEvent(
   const userCopy = copyUserExceptLog(user);
 
   try {
+    // console.log("THE old MODIfied USER is :");
+    // console.log(userCopy);
     // Apply the event to the copied user:
     const mutation = eventModule.mutate(userCopy, eventCopy);
     if (Result.isErr(mutation)) {
@@ -160,6 +168,9 @@ export function newUserFromEvent(
     userCopy.log = user.log;
 
     // Return the modified (and validated) user:
+    console.log("THE NEW MODIfied USER is :");
+    console.log(userCopy);
+
     return userCopy;
   } catch (error) {
     return new EventSourcingError({ ctx, event, target: user }, error);

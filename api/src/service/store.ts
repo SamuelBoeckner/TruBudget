@@ -65,7 +65,18 @@ export async function store(conn: ConnToken, ctx: Ctx, event: BusinessEvent): Pr
         event,
       });
 
+    case "user_enabled":
+      console.log("IN STORE");
+      console.log(event);
+      return writeTo(conn, ctx, {
+        stream: "users",
+        keys: [event.user.id],
+        event,
+      });
+
     case "user_password_changed":
+      console.log("IN STORE PW: ");
+      console.log(event);
       return writeTo(conn, ctx, {
         stream: "users",
         keys: [event.user.id],
@@ -74,6 +85,8 @@ export async function store(conn: ConnToken, ctx: Ctx, event: BusinessEvent): Pr
 
     case "user_permission_granted":
     case "user_permission_revoked":
+      console.log("IN STORE of perms: ");
+      console.log(event);
       return writeTo(conn, ctx, {
         stream: "users",
         keys: [event.userId],

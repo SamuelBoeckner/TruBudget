@@ -1,22 +1,28 @@
 import Joi = require("joi");
 import { VError } from "verror";
 
-import Intent, { userIntents } from "../../../authz/intents";
 import * as Result from "../../../result";
-import { Identity } from "../organization/identity";
-import * as UserRecord from "./user_record";
+import * as UserRecord from "../organization/user_record";
+import { Identity } from "./identity";
+import Intent, { userIntents } from "../../../authz/intents";
 
-type eventTypeType = "user_permission_revoked";
-const eventType: eventTypeType = "user_permission_revoked";
+type eventTypeType = "user_enabled";
+const eventType: eventTypeType = "user_enabled";
+
+interface InitialData {
+  id: UserRecord.Id;
+}
+
+const initialDataSchema = Joi.object({
+  id: UserRecord.idSchema.required(),
+});
 
 export interface Event {
   type: eventTypeType;
   source: string;
   time: string; // ISO timestamp
   publisher: Identity;
-  userId: UserRecord.Id;
-  permission: Intent;
-  revokee: Identity;
+  user: InitialData;
 }
 
 export const schema = Joi.object({
@@ -24,17 +30,14 @@ export const schema = Joi.object({
   source: Joi.string().allow("").required(),
   time: Joi.date().iso().required(),
   publisher: Joi.string().required(),
-  userId: UserRecord.idSchema.required(),
   permission: Joi.valid(userIntents).required(),
-  revokee: Joi.string().required(),
+  user: initialDataSchema.required(),
 });
 
 export function createEvent(
   source: string,
   publisher: Identity,
-  userId: UserRecord.Id,
-  permission: Intent,
-  revokee: Identity,
+  user: InitialData,
   time: string = new Date().toISOString(),
 ): Event {
   const event = {
@@ -42,9 +45,7 @@ export function createEvent(
     source,
     publisher,
     time,
-    userId,
-    permission,
-    revokee,
+    user,
   };
   const validationResult = validate(event);
   if (Result.isErr(validationResult)) {
@@ -69,20 +70,23 @@ export function validate(input: any): Result.Type<Event> {
  * `user_eventsourcing.ts`:`newUserFromEvent`.
  */
 export function mutate(user: UserRecord.UserRecord, event: Event): Result.Type<void> {
-  if (event.type !== "user_permission_revoked") {
+  // console.log(" HEYYYY");
+  // console.log(event.type !== "user_enabled");
+  // console.log("data -user: #######################");
+  // console.log(user);
+  // console.log("data -event : #################### ");
+  // console.log(event);
+
+  if (event.type !== "user_enabled") {
     throw new VError(`illegal event type: ${event.type}`);
   }
 
-  const eligibleIdentities = user.permissions[event.permission];
-  if (eligibleIdentities === undefined) {
-    // Nothing to do here..
-    return;
-  }
+  // Enabling user
+  //user.permissions['user.authenticate'] = [user.id];
 
-  const foundIndex = eligibleIdentities.indexOf(event.revokee);
-  const hasPermission = foundIndex !== -1;
-  if (hasPermission) {
-    // Remove the user from the array:
-    eligibleIdentities.splice(foundIndex, 1);
-  }
+  // Disabling user
+  user.permissions["user.authenticate"] = [];
+
+  // console.log("data -user: NEW  ===================");
+  // console.log(user);
 }
