@@ -14,7 +14,7 @@ const ctx: Ctx = { requestId: "", source: "test" };
 const root: ServiceUser = { id: "root", groups: [] };
 const alice: ServiceUser = { id: "alice", groups: ["alice_and_bob", "alice_and_bob_and_charlie"] };
 const bob: ServiceUser = { id: "bob", groups: ["alice_and_bob", "alice_and_bob_and_charlie"] };
-
+const otherOrga = "otherOrga";
 const dummy = "dummy";
 const passwordChangeUser: UserRecord = {
   id: dummy,
@@ -73,6 +73,21 @@ describe("change a user's password: authorization", () => {
     assert.isTrue(Result.isOk(result));
     assert.isTrue(result.length > 0);
   });
+
+  // NEWWWWWW
+  it("A user (including root) cannot revoke global permissions to users from other organizations", async () => {
+    const result = await changeUserPassword(ctx, alice, requestData, {
+      ...baseRepository,
+      getUser: () =>
+        Promise.resolve({
+          ...passwordChangeUser,
+          //organization: otherOrga,
+          permissions: { "user.changePassword": [alice.id] },
+        }),
+    });
+    assert.isTrue(Result.isErr(result));
+    assert.instanceOf(result, NotAuthorized);
+  });
 });
 
 describe("change a user's password: how modifications are applied", () => {
@@ -88,7 +103,7 @@ describe("change a user's password: how modifications are applied", () => {
     assert.isTrue(await isPasswordMatch(oldPassword, oldPasswordHash));
     const result = await changeUserPassword(ctx, alice, reqData, {
       ...baseRepository,
-      hash: async passwordPlaintext => hashPassword(passwordPlaintext),
+      hash: async (passwordPlaintext) => hashPassword(passwordPlaintext),
       getUser: async () =>
         Promise.resolve({
           ...passwordChangeUser,
