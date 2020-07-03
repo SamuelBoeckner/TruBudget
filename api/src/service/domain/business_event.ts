@@ -8,7 +8,7 @@ import * as GroupPermissionRevoked from "./organization/group_permissions_revoke
 import * as UserCreated from "./organization/user_created";
 import * as UserPasswordChanged from "./organization/user_password_changed";
 import * as UserEnabled from "./organization/user_enabled";
-//import * as UserDiabled from "./organization/user_diabled";
+import * as UserDiabled from "./organization/user_disabled";
 import * as UserPermissionGranted from "./organization/user_permission_granted";
 import * as UserPermissionRevoked from "./organization/user_permission_revoked";
 import * as GlobalPermissionsGranted from "./workflow/global_permission_granted";
@@ -70,7 +70,7 @@ export type BusinessEvent =
   | UserCreated.Event
   | UserPasswordChanged.Event
   | UserEnabled.Event
-  //| UserDiabled.Event
+  | UserDiabled.Event
   | UserPermissionGranted.Event
   | UserPermissionRevoked.Event
   | WorkflowitemAssigned.Event

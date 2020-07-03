@@ -7,6 +7,7 @@ import { BusinessEvent } from "../business_event";
 import { EventSourcingError } from "../errors/event_sourcing_error";
 import * as UserCreated from "./user_created";
 import * as UserEnabled from "./user_enabled";
+import * as UserDisabled from "./user_disabled";
 import * as UserPasswordChanged from "./user_password_changed";
 import * as UserPermissionGranted from "./user_permission_granted";
 import * as UserPermissionRevoked from "./user_permission_revoked";
@@ -105,12 +106,15 @@ function getUserId(event: BusinessEvent): Result.Type<UserRecord.Id> {
   switch (event.type) {
     case "user_password_changed":
     case "user_enabled":
+    case "user_disabled":
       return event.user.id;
     case "user_permission_granted":
     case "user_permission_revoked":
       return event.userId;
 
     default:
+      console.log("an Verror here !");
+      console.log(`cannot find user ID in event of type ${event.type}`);
       return new VError(`cannot find user ID in event of type ${event.type}`);
   }
 }
@@ -128,6 +132,8 @@ function getEventModule(event: BusinessEvent): EventModule {
       return UserPermissionRevoked;
     case "user_enabled":
       return UserEnabled;
+    case "user_disabled":
+      return UserDisabled;
     default:
       throw new VError(`unknown user event ${event.type}`);
   }

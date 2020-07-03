@@ -5,8 +5,8 @@ import * as Result from "../../../result";
 import * as UserRecord from "../organization/user_record";
 import { Identity } from "./identity";
 
-type eventTypeType = "user_enabled";
-const eventType: eventTypeType = "user_enabled";
+type eventTypeType = "user_disabled";
+const eventType: eventTypeType = "user_disabled";
 
 interface InitialData {
   id: UserRecord.Id;
@@ -68,10 +68,10 @@ export function validate(input: any): Result.Type<Event> {
  * `user_eventsourcing.ts`:`newUserFromEvent`.
  */
 export function mutate(user: UserRecord.UserRecord, event: Event): Result.Type<void> {
-  if (event.type !== "user_enabled") {
+  if (event.type !== "user_disabled") {
     throw new VError(`illegal event type: ${event.type}`);
   }
 
-  // Enabling user
-  user.permissions["user.authenticate"] = [user.id];
+  // Disabling user
+  user.permissions["user.authenticate"] = [];
 }

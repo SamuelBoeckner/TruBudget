@@ -66,12 +66,7 @@ export async function store(conn: ConnToken, ctx: Ctx, event: BusinessEvent): Pr
       });
 
     case "user_enabled":
-      return writeTo(conn, ctx, {
-        stream: "users",
-        keys: [event.user.id],
-        event,
-      });
-
+    case "user_disabled":
     case "user_password_changed":
       return writeTo(conn, ctx, {
         stream: "users",
