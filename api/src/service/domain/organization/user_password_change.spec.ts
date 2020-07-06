@@ -14,7 +14,7 @@ const ctx: Ctx = { requestId: "", source: "test" };
 const root: ServiceUser = { id: "root", groups: [] };
 const alice: ServiceUser = { id: "alice", groups: ["alice_and_bob", "alice_and_bob_and_charlie"] };
 const bob: ServiceUser = { id: "bob", groups: ["alice_and_bob", "alice_and_bob_and_charlie"] };
-const otherOrga = "otherOrga";
+const otherOrganization = "otherOrganization";
 const dummy = "dummy";
 const passwordChangeUser: UserRecord = {
   id: dummy,
@@ -81,7 +81,7 @@ describe("change a user's password: authorization", () => {
       getUser: () =>
         Promise.resolve({
           ...passwordChangeUser,
-          //organization: otherOrga,
+          organization: otherOrganization,
           permissions: { "user.changePassword": [alice.id] },
         }),
     });
