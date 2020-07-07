@@ -8,7 +8,6 @@ export const FETCH_USER_SUCCESS = "FETCH_USER_SUCCESS";
 
 export const STORE_USERNAME = "STORE_USERNAME";
 export const STORE_PASSWORD = "STORE_PASSWORD";
-export const LOGIN_ERROR_MESSAGE = "LOGIN_ERROR_MESSAGE";
 export const SHOW_LOGIN_PASSWORD_ERROR = "SHOW_LOGIN_PASSWORD_ERROR";
 export const SHOW_LOGIN_ACTIVATION_ERROR = "SHOW_LOGIN_ACTIVATION_ERROR";
 export const STORE_ENVIRONMENT = "STORE_ENVIRONMENT";
@@ -84,27 +83,6 @@ export function loginAdmin(user) {
 export function logoutAdmin() {
   return {
     type: ADMIN_LOGOUT
-  };
-}
-
-export function storeLoginErrorMessage(message) {
-  return {
-    type: LOGIN_ERROR_MESSAGE,
-    message
-  };
-}
-
-export function showLoginError(show) {
-  return {
-    type: SHOW_LOGIN_PASSWORD_ERROR,
-    show
-  };
-}
-
-export function showLoginActivationError(show) {
-  return {
-    type: SHOW_LOGIN_ACTIVATION_ERROR,
-    show
   };
 }
 

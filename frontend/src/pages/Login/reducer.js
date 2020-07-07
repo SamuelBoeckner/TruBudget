@@ -39,7 +39,6 @@ export const defaultState = fromJS({
   avatar: "/lego_avatar_female2.jpg",
   environment: "Test",
   loginErrorMessage: "",
-  showLoginError: false,
   jwt: "",
   adminLoginFailed: false,
   language: "en-gb",

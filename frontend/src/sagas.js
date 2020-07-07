@@ -803,6 +803,7 @@ export function* loginSaga({ user }) {
 
   function* onLoginError(error) {
     if (error.response.status === 403) {
+      // user is disabled
       yield put({
         type: SHOW_LOGIN_ACTIVATION_ERROR,
         show: true
@@ -812,6 +813,7 @@ export function* loginSaga({ user }) {
         show: false
       });
     } else {
+      // password is wrong
       yield put({
         type: SHOW_LOGIN_ACTIVATION_ERROR,
         show: false

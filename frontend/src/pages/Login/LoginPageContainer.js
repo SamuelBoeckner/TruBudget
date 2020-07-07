@@ -7,7 +7,6 @@ import {
   loginWithCredentials,
   logout,
   setLanguage,
-  showLoginError,
   storeEnvironment,
   storePassword,
   storeUsername
