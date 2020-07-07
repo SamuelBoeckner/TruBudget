@@ -7,6 +7,8 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import EditIcon from "@material-ui/icons/Edit";
 import PermissionIcon from "@material-ui/icons/LockOpen";
+import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import _sortBy from "lodash/sortBy";
 import React from "react";
 
@@ -34,6 +36,7 @@ const UsersTable = ({
   isDataLoading
 }) => {
   const sortedUsers = sortUsers(users.filter(u => u.isGroup !== true));
+  console.log(users);
 
   return sortedUsers.length > 0 ? (
     <Paper>
@@ -55,6 +58,8 @@ const UsersTable = ({
                 user.permissions &&
                 user.permissions.hasOwnProperty("user.changePassword") &&
                 user.permissions["user.changePassword"].some(x => x === userId);
+
+              const isUserDisabled = user.permissions["user.authenticate"].some(x => x === user.id);
 
               return (
                 <TableRow data-test={`user-${user.id}`} key={user.id}>
@@ -78,6 +83,20 @@ const UsersTable = ({
                         title={strings.common.edit}
                         icon={<EditIcon />}
                         data-test={`edit-user-${user.id}`}
+                      />
+                      <ActionButton
+                        onClick={() => console.log("disabling")}
+                        notVisible={!isUserDisabled && !isRoot}
+                        title={"DISABLE USER 878787"}
+                        icon={<RemoveCircleIcon />}
+                        data-test={`disable-user-${user.id}`}
+                      />
+                      <ActionButton
+                        onClick={() => console.log("enabling")}
+                        notVisible={isUserDisabled && !isRoot}
+                        title={"ENABLE USER 878787"}
+                        icon={<CheckCircleIcon />}
+                        data-test={`enable-user-${user.id}`}
                       />
                     </div>
                   </TableCell>
