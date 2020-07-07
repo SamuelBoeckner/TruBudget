@@ -316,8 +316,8 @@ UserListAPI.addHttpHandler(server, URL_PREFIX, {
 });
 
 UserPasswordChangeAPI.addHttpHandler(server, URL_PREFIX, {
-  changeUserPassword: (ctx, issuer, reqData) =>
-    UserPasswordChangeService.changeUserPassword(db, ctx, issuer, reqData),
+  changeUserPassword: (ctx, issuer, orga, reqData) =>
+    UserPasswordChangeService.changeUserPassword(db, ctx, issuer, orga, reqData),
 });
 
 UserPermissionGrantAPI.addHttpHandler(server, URL_PREFIX, {

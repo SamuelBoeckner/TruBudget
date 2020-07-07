@@ -82,6 +82,7 @@ interface Service {
   changeUserPassword(
     ctx: Ctx,
     serviceUser: ServiceUser,
+    issuerOrganization: string,
     requestData: UserChangePassword.RequestData,
   ): Promise<void>;
 }
@@ -96,6 +97,7 @@ export function addHttpHandler(server: FastifyInstance, urlPrefix: string, servi
     };
 
     const bodyResult = validateRequestBody(request.body);
+    const issuerOrganization: string = (request as AuthenticatedRequest).user.organization;
 
     if (Result.isErr(bodyResult)) {
       const { code, body } = toHttpError(
@@ -112,7 +114,7 @@ export function addHttpHandler(server: FastifyInstance, urlPrefix: string, servi
     };
 
     service
-      .changeUserPassword(ctx, serviceUser, reqData)
+      .changeUserPassword(ctx, serviceUser, issuerOrganization, reqData)
       .then(() => {
         const code = 200;
         const body = {
@@ -121,7 +123,7 @@ export function addHttpHandler(server: FastifyInstance, urlPrefix: string, servi
         };
         reply.status(code).send(body);
       })
-      .catch(err => {
+      .catch((err) => {
         const { code, body } = toHttpError(err);
         reply.status(code).send(body);
       });

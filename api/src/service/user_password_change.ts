@@ -11,12 +11,19 @@ export async function changeUserPassword(
   conn: ConnToken,
   ctx: Ctx,
   serviceUser: ServiceUser,
+  issuerOrganization: string,
   requestData: UserPasswordChange.RequestData,
 ): Promise<void> {
-  const result = await UserPasswordChange.changeUserPassword(ctx, serviceUser, requestData, {
-    getUser: () => UserQuery.getUser(conn, ctx, serviceUser, requestData.userId),
-    hash: passwordPlainText => hashPassword(passwordPlainText),
-  });
+  const result = await UserPasswordChange.changeUserPassword(
+    ctx,
+    serviceUser,
+    issuerOrganization,
+    requestData,
+    {
+      getUser: () => UserQuery.getUser(conn, ctx, serviceUser, requestData.userId),
+      hash: (passwordPlainText) => hashPassword(passwordPlainText),
+    },
+  );
   if (Result.isErr(result)) return Promise.reject(result);
 
   for (const event of result) {
