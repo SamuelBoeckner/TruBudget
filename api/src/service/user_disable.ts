@@ -10,12 +10,13 @@ import * as UserQuery from "./user_query";
 export async function disableUser(
   conn: ConnToken,
   ctx: Ctx,
-  serviceUser: ServiceUser,
-  requestData: UserDisable.RequestData,
+  issuer: ServiceUser,
+  issuerOrganization: string,
+  revokee: UserDisable.RequestData,
 ): Promise<void> {
-  const result = await UserDisable.disableUser(ctx, serviceUser, requestData, {
-    getUser: () => UserQuery.getUser(conn, ctx, serviceUser, requestData.userId),
-    getGlobalPermissions: async () => getGlobalPermissions(conn, ctx, serviceUser),
+  const result = await UserDisable.disableUser(ctx, issuer, issuerOrganization, revokee, {
+    getUser: () => UserQuery.getUser(conn, ctx, issuer, revokee.userId),
+    getGlobalPermissions: async () => getGlobalPermissions(conn, ctx, issuer),
   });
   if (Result.isErr(result)) return Promise.reject(result);
 

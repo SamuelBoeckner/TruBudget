@@ -78,7 +78,8 @@ function mkSwaggerSchema(server: FastifyInstance) {
 interface Service {
   enableUser(
     ctx: Ctx,
-    serviceUser: ServiceUser,
+    issuer: ServiceUser,
+    issuerOrganization: string,
     requestData: UserEnable.RequestData,
   ): Promise<void>;
 }
@@ -87,11 +88,11 @@ export function addHttpHandler(server: FastifyInstance, urlPrefix: string, servi
   server.post(`${urlPrefix}/global.enableUser`, mkSwaggerSchema(server), (request, reply) => {
     const ctx: Ctx = { requestId: request.id, source: "http" };
 
-    const serviceUser: ServiceUser = {
+    const issuer: ServiceUser = {
       id: (request as AuthenticatedRequest).user.userId,
       groups: (request as AuthenticatedRequest).user.groups,
     };
-
+    const issuerOrganization: string = (request as AuthenticatedRequest).user.organization;
     const bodyResult = validateRequestBody(request.body);
 
     if (Result.isErr(bodyResult)) {
@@ -100,13 +101,12 @@ export function addHttpHandler(server: FastifyInstance, urlPrefix: string, servi
       return;
     }
 
-    const data = bodyResult.data;
-    const reqData = {
-      userId: data.userId,
+    const revokee = {
+      userId: bodyResult.data.userId,
     };
 
     service
-      .enableUser(ctx, serviceUser, reqData)
+      .enableUser(ctx, issuer, issuerOrganization, revokee)
       .then(() => {
         const code = 200;
         const body = {

@@ -301,11 +301,13 @@ UserCreateAPI.addHttpHandler(server, URL_PREFIX, {
 });
 
 UserEnableAPI.addHttpHandler(server, URL_PREFIX, {
-  enableUser: (ctx, issuer, reqData) => UserEnableService.enableUser(db, ctx, issuer, reqData),
+  enableUser: (ctx, issuer, orga, reqData) =>
+    UserEnableService.enableUser(db, ctx, issuer, orga, reqData),
 });
 
 UserDisableAPI.addHttpHandler(server, URL_PREFIX, {
-  disableUser: (ctx, issuer, reqData) => UserDisableService.disableUser(db, ctx, issuer, reqData),
+  disableUser: (ctx, issuer, orga, reqData) =>
+    UserDisableService.disableUser(db, ctx, issuer, orga, reqData),
 });
 
 UserListAPI.addHttpHandler(server, URL_PREFIX, {

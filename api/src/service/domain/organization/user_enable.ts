@@ -34,6 +34,7 @@ interface Repository {
 export async function enableUser(
   ctx: Ctx,
   issuer: ServiceUser,
+  issuerOrganization: string,
   data: RequestData,
   repository: Repository,
 ): Promise<Result.Type<BusinessEvent[]>> {
@@ -57,6 +58,16 @@ export async function enableUser(
     return new PreconditionError(ctx, userEnabled, "Error getting user");
   }
   const user = userResult;
+
+  // Check if revokee and issuer belong to the same organization
+  if (userResult.organization !== issuerOrganization) {
+    return new NotAuthorized({
+      ctx,
+      userId: issuer.id,
+      intent,
+      target: currentGlobalPermissions,
+    });
+  }
 
   // Check authorization (if not root):
   if (issuer.id !== "root") {

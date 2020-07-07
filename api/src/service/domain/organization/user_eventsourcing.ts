@@ -113,8 +113,8 @@ function getUserId(event: BusinessEvent): Result.Type<UserRecord.Id> {
       return event.userId;
 
     default:
-      console.log("an Verror here !");
-      console.log(`cannot find user ID in event of type ${event.type}`);
+      // console.log("an Verror here !");
+      // console.log(`cannot find user ID in event of type ${event.type}`);
       return new VError(`cannot find user ID in event of type ${event.type}`);
   }
 }

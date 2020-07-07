@@ -34,6 +34,7 @@ interface Repository {
 export async function disableUser(
   ctx: Ctx,
   issuer: ServiceUser,
+  issuerOrganization: string,
   data: RequestData,
   repository: Repository,
 ): Promise<Result.Type<BusinessEvent[]>> {
@@ -42,7 +43,6 @@ export async function disableUser(
   const validationResult = validate(data);
   const intent: Intent = "global.disableUser";
   const currentGlobalPermissions = await repository.getGlobalPermissions();
-
   // Create the new event:
   const userDisabled = UserDisabled.createEvent(source, publisher, {
     id: data.userId,
@@ -57,6 +57,16 @@ export async function disableUser(
     return new PreconditionError(ctx, userDisabled, "Error getting user");
   }
   const user = userResult;
+
+  // Check if revokee and issuer belong to the same organization
+  if (userResult.organization !== issuerOrganization) {
+    return new NotAuthorized({
+      ctx,
+      userId: issuer.id,
+      intent,
+      target: currentGlobalPermissions,
+    });
+  }
 
   // Check authorization (if not root):
   if (issuer.id !== "root") {
