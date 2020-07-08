@@ -10,11 +10,12 @@ import PermissionIcon from "@material-ui/icons/LockOpen";
 import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import _sortBy from "lodash/sortBy";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import strings from "../../localizeStrings";
 import ActionButton from "../Common/ActionButton";
 import { UserEmptyState } from "./UsersGroupsEmptyStates";
+//import { fetchUser } from "../Login/actions";
 
 const styles = {
   iconColor: {
@@ -33,10 +34,17 @@ const UsersTable = ({
   showPasswordDialog,
   userId,
   isRoot,
-  isDataLoading
+  isDataLoading,
+  disableUser,
+  enableUser,
+  fetchUser
 }) => {
-  const sortedUsers = sortUsers(users.filter(u => u.isGroup !== true));
-  console.log(users);
+  let sortedUsers = sortUsers(users.filter(u => u.isGroup !== true));
+  const [usersChanged, setUsersChanged] = useState(false);
+  useEffect(() => {
+    fetchUser();
+    setUsersChanged(false);
+  }, [usersChanged, fetchUser]);
 
   return sortedUsers.length > 0 ? (
     <Paper>
@@ -59,7 +67,7 @@ const UsersTable = ({
                 user.permissions.hasOwnProperty("user.changePassword") &&
                 user.permissions["user.changePassword"].some(x => x === userId);
 
-              const isUserDisabled = user.permissions["user.authenticate"].some(x => x === user.id);
+              const isUserEnabled = user.permissions["user.authenticate"].some(x => x === user.id);
 
               return (
                 <TableRow data-test={`user-${user.id}`} key={user.id}>
@@ -85,15 +93,21 @@ const UsersTable = ({
                         data-test={`edit-user-${user.id}`}
                       />
                       <ActionButton
-                        onClick={() => console.log("disabling")}
-                        notVisible={!isUserDisabled && !isRoot}
+                        onClick={() => {
+                          disableUser(user.id);
+                          setUsersChanged(true);
+                        }}
+                        notVisible={!isUserEnabled && !isRoot}
                         title={"DISABLE USER 878787"}
                         icon={<RemoveCircleIcon />}
                         data-test={`disable-user-${user.id}`}
                       />
                       <ActionButton
-                        onClick={() => console.log("enabling")}
-                        notVisible={isUserDisabled && !isRoot}
+                        onClick={() => {
+                          enableUser(user.id);
+                          setUsersChanged(true);
+                        }}
+                        notVisible={isUserEnabled && !isRoot}
                         title={"ENABLE USER 878787"}
                         icon={<CheckCircleIcon />}
                         data-test={`enable-user-${user.id}`}

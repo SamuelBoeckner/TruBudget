@@ -25,7 +25,9 @@ import {
   showDashboardDialog,
   showPasswordDialog,
   storeGroupId,
-  storeGroupName
+  storeGroupName,
+  enableUser,
+  disableUser
 } from "./actions";
 import Users from "./Users";
 
@@ -96,7 +98,9 @@ const mapDispatchToProps = dispatch => {
     showPasswordDialog: editId => dispatch(showPasswordDialog(editId)),
     listGlobalPermissions: () => dispatch(listPermissions()),
     checkAndChangeUserPassword: (actingUser, username, userPassword, newPassword) =>
-      dispatch(checkAndChangeUserPassword(actingUser, username, userPassword, newPassword))
+      dispatch(checkAndChangeUserPassword(actingUser, username, userPassword, newPassword)),
+    enableUser: userId => dispatch(enableUser(userId)),
+    disableUser: userId => dispatch(disableUser(userId))
   };
 };
 

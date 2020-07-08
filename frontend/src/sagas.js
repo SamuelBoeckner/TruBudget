@@ -148,7 +148,11 @@ import {
   REMOVE_USER,
   REMOVE_USER_SUCCESS,
   REVOKE_GLOBAL_PERMISSION,
-  REVOKE_GLOBAL_PERMISSION_SUCCESS
+  REVOKE_GLOBAL_PERMISSION_SUCCESS,
+  ENABLE_USER,
+  ENABLE_USER_SUCCESS,
+  DISABLE_USER,
+  DISABLE_USER_SUCCESS
 } from "./pages/Users/actions.js";
 import {
   ASSIGN_SUBPROJECT,
@@ -966,6 +970,23 @@ export function* checkAndChangeUserPasswordSaga({ username, actingUser, currentP
   } catch (error) {
     yield handleError(error);
   }
+}
+
+export function* enableUserSaga({ userId }) {
+  yield execute(function*() {
+    yield callApi(api.enableUser, userId);
+    yield put({
+      type: ENABLE_USER_SUCCESS
+    });
+  }, true);
+}
+export function* disableUserSaga({ userId }) {
+  yield execute(function*() {
+    yield callApi(api.disableUser, userId);
+    yield put({
+      type: DISABLE_USER_SUCCESS
+    });
+  }, true);
 }
 
 export function* removeUserFromGroupSaga({ groupId, userId }) {
@@ -2283,6 +2304,8 @@ export default function* rootSaga() {
 
       // Users
       yield takeEvery(CHECK_AND_CHANGE_USER_PASSWORD, checkAndChangeUserPasswordSaga),
+      yield takeEvery(ENABLE_USER, enableUserSaga),
+      yield takeEvery(DISABLE_USER, disableUserSaga),
 
       // LiveUpdates
       yield takeLeading(LIVE_UPDATE_PROJECT, liveUpdateProjectSaga),
