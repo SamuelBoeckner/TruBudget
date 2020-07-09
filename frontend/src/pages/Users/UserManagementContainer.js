@@ -59,6 +59,8 @@ const mapStateToProps = state => {
   return {
     allowedIntents: state.getIn(["login", "allowedIntents"]),
     users: state.getIn(["login", "user"]),
+    enabledUsers: state.getIn(["login", "enabledUsers"]),
+    disabledUsers: state.getIn(["login", "disabledUsers"]),
     userId: state.getIn(["login", "id"]),
     organization: state.getIn(["login", "organization"]),
     tabIndex: state.getIn(["users", "tabIndex"]),

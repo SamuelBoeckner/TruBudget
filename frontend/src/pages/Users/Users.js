@@ -36,11 +36,20 @@ const styles = {
   }
 };
 const Users = props => {
-  const { tabIndex, setTabIndex, showDashboardDialog, allowedIntents, isDataLoading } = props;
+  const {
+    tabIndex,
+    setTabIndex,
+    showDashboardDialog,
+    allowedIntents,
+    isDataLoading,
+    enabledUsers,
+    disabledUsers
+  } = props;
   const isCreateButtonDisabled =
     tabIndex === 0 ? !allowedIntents.includes("global.createUser") : !allowedIntents.includes("global.createGroup");
   const onClick = () => (tabIndex === 0 ? showDashboardDialog("addUser") : showDashboardDialog("addGroup"));
   const permissionIconDisplayed = allowedIntents.includes("global.listPermissions");
+
   return (
     <div data-test="userdashboard" style={styles.container}>
       <div style={styles.customWidth}>
@@ -53,6 +62,7 @@ const Users = props => {
           >
             <Tab label={strings.users.users} aria-label="usersTab" />
             <Tab label={strings.users.groups} aria-label="groupsTab" />
+            <Tab label={"DISABLED_USERS-123"} aria-label="disabledUsersTab" />
           </Tabs>
         </AppBar>
         {!isCreateButtonDisabled ? (
@@ -69,8 +79,19 @@ const Users = props => {
             </Fab>
           </div>
         ) : null}
-        {tabIndex === 0 && <UsersTable permissionIconDisplayed={permissionIconDisplayed} {...props} />}
+        {tabIndex === 0 && (
+          <UsersTable {...props} permissionIconDisplayed={permissionIconDisplayed} users={enabledUsers} />
+        )}
+
         {isDataLoading ? <div /> : tabIndex === 1 && <GroupTable {...props} />}
+
+        {isDataLoading ? (
+          <div />
+        ) : (
+          tabIndex === 2 && (
+            <UsersTable {...props} permissionIconDisplayed={permissionIconDisplayed} users={disabledUsers} />
+          )
+        )}
       </div>
       <DialogContainer {...props} />
     </div>

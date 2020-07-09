@@ -47,8 +47,6 @@ const UsersTable = ({
     setUsersChanged(false);
   }, [usersChanged, fetchUser]);
 
-  console.log(allowedIntents.includes("global.enableUser") && allowedIntents.includes("global.disableUser"));
-
   return sortedUsers.length > 0 ? (
     <Paper>
       <Table>

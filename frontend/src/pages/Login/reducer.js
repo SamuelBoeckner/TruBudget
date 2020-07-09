@@ -43,6 +43,8 @@ export const defaultState = fromJS({
   adminLoginFailed: false,
   language: "en-gb",
   user: [],
+  enabledUsers: [],
+  disabledUsers: [],
   userDisplayNameMap: {},
   emailServiceAvailable: false
 });
@@ -81,11 +83,21 @@ export default function loginReducer(state = defaultState, action) {
     case STORE_PASSWORD:
       return state.set("password", action.password);
     case FETCH_USER_SUCCESS:
-      const userMap = {};
+      const userDisplayNameMap = {};
+      const enabledUsers = [];
+      const disabledUsers = [];
       action.user.forEach(user => {
-        userMap[user.id] = user.displayName;
+        userDisplayNameMap[user.id] = user.displayName;
+        if (!user.isGroup) {
+          user.permissions["user.authenticate"].includes(user.id) ? enabledUsers.push(user) : disabledUsers.push(user);
+        }
       });
-      return state.merge({ user: fromJS(action.user), userDisplayNameMap: fromJS(userMap) });
+      return state.merge({
+        user: fromJS(action.user),
+        userDisplayNameMap: fromJS(userDisplayNameMap),
+        enabledUsers: fromJS(enabledUsers),
+        disabledUsers: fromJS(disabledUsers)
+      });
     case FETCH_ADMIN_USER_SUCCESS:
       return state.merge({
         loggedInAdminUser: action.user,
