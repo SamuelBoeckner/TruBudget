@@ -37,7 +37,8 @@ const UsersTable = ({
   isDataLoading,
   disableUser,
   enableUser,
-  fetchUser
+  fetchUser,
+  allowedIntents
 }) => {
   let sortedUsers = sortUsers(users.filter(u => u.isGroup !== true));
   const [usersChanged, setUsersChanged] = useState(false);
@@ -45,6 +46,8 @@ const UsersTable = ({
     fetchUser();
     setUsersChanged(false);
   }, [usersChanged, fetchUser]);
+
+  console.log(allowedIntents.includes("global.enableUser") && allowedIntents.includes("global.disableUser"));
 
   return sortedUsers.length > 0 ? (
     <Paper>
@@ -68,6 +71,10 @@ const UsersTable = ({
                 user.permissions["user.changePassword"].some(x => x === userId);
 
               const isUserEnabled = user.permissions["user.authenticate"].some(x => x === user.id);
+              const hasPermission =
+                allowedIntents.includes("global.enableUser") && allowedIntents.includes("global.disableUser");
+              const canEnableUser = !isUserEnabled && hasPermission;
+              const canDisableUser = isUserEnabled && hasPermission;
 
               return (
                 <TableRow data-test={`user-${user.id}`} key={user.id}>
@@ -97,7 +104,7 @@ const UsersTable = ({
                           disableUser(user.id);
                           setUsersChanged(true);
                         }}
-                        notVisible={!isUserEnabled && !isRoot}
+                        notVisible={!canDisableUser && !isRoot}
                         title={"DISABLE USER 878787"}
                         icon={<RemoveCircleIcon />}
                         data-test={`disable-user-${user.id}`}
@@ -107,7 +114,7 @@ const UsersTable = ({
                           enableUser(user.id);
                           setUsersChanged(true);
                         }}
-                        notVisible={isUserEnabled && !isRoot}
+                        notVisible={!canEnableUser && !isRoot}
                         title={"ENABLE USER 878787"}
                         icon={<CheckCircleIcon />}
                         data-test={`enable-user-${user.id}`}
