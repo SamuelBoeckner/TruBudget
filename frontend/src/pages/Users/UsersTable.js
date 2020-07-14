@@ -11,11 +11,9 @@ import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import _sortBy from "lodash/sortBy";
 import React, { useEffect, useState } from "react";
-
 import strings from "../../localizeStrings";
 import ActionButton from "../Common/ActionButton";
 import { UserEmptyState } from "./UsersGroupsEmptyStates";
-//import { fetchUser } from "../Login/actions";
 
 const styles = {
   iconColor: {
@@ -38,7 +36,10 @@ const UsersTable = ({
   disableUser,
   enableUser,
   fetchUser,
-  allowedIntents
+  allowedIntents,
+  showSnackbar,
+  storeSnackbarMessage,
+  areUsersEnabled = false
 }) => {
   let sortedUsers = sortUsers(users.filter(u => u.isGroup !== true));
   const [usersChanged, setUsersChanged] = useState(false);
@@ -68,11 +69,11 @@ const UsersTable = ({
                 user.permissions.hasOwnProperty("user.changePassword") &&
                 user.permissions["user.changePassword"].some(x => x === userId);
 
-              const isUserEnabled = user.permissions["user.authenticate"].some(x => x === user.id);
+              // Define if enable- or disable-button is shown
               const hasPermission =
                 allowedIntents.includes("global.enableUser") && allowedIntents.includes("global.disableUser");
-              const canEnableUser = !isUserEnabled && hasPermission;
-              const canDisableUser = isUserEnabled && hasPermission;
+              const canEnableUser = !areUsersEnabled && hasPermission;
+              const canDisableUser = areUsersEnabled && hasPermission;
 
               return (
                 <TableRow data-test={`user-${user.id}`} key={user.id}>
@@ -101,6 +102,8 @@ const UsersTable = ({
                         onClick={() => {
                           disableUser(user.id);
                           setUsersChanged(true);
+                          storeSnackbarMessage("User Disabled nice !!!!! ");
+                          showSnackbar();
                         }}
                         notVisible={!canDisableUser && !isRoot}
                         title={"DISABLE USER 878787"}
@@ -111,6 +114,8 @@ const UsersTable = ({
                         onClick={() => {
                           enableUser(user.id);
                           setUsersChanged(true);
+                          storeSnackbarMessage("User Enabled cool !!!!! ");
+                          showSnackbar();
                         }}
                         notVisible={!canEnableUser && !isRoot}
                         title={"ENABLE USER 878787"}
@@ -126,8 +131,8 @@ const UsersTable = ({
         )}
       </Table>
     </Paper>
-  ) : (
+  ) : areUsersEnabled ? (
     <UserEmptyState />
-  );
+  ) : null;
 };
 export default withStyles(styles)(UsersTable);

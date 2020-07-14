@@ -42,12 +42,11 @@ interface Repository {
 }
 
 async function checkAssignments(repository: Repository, userToDisable: string) {
-  let assignedProjects: Project.Project[] = [];
-  let assignedSubprojects: Subproject.Subproject[] = [];
-  let assignedWorkflowitems: Workflowitem.Workflowitem[] = [];
+  const assignedProjects: Project.Project[] = [];
+  const assignedSubprojects: Subproject.Subproject[] = [];
+  const assignedWorkflowitems: Workflowitem.Workflowitem[] = [];
 
   const projects = await repository.getAllProjects();
-  //assignedProjects = projects.filter((project) => project.assignee === userToDisable && project.status === "open");
   for await (const project of projects) {
     if (project.status === "closed") continue;
     if (project.assignee === userToDisable) {
@@ -76,8 +75,12 @@ async function checkAssignments(repository: Repository, userToDisable: string) {
     assignedWorkflowitems.length === 0
   ) {
     return false;
+  } else {
+    const projectNames = assignedProjects.map((x) => x.displayName);
+    const subprojectNames = assignedSubprojects.map((x) => x.displayName);
+    const workflowitemNames = assignedWorkflowitems.map((x) => x.displayName);
+    return JSON.stringify({ projectNames, subprojectNames, workflowitemNames });
   }
-  return { assignedProjects, assignedSubprojects, assignedWorkflowitems };
 }
 
 export async function disableUser(
@@ -139,7 +142,7 @@ export async function disableUser(
     return new PreconditionError(
       ctx,
       userDisabled,
-      "Error - This user is still assigned to some project/subproject/wf-item: ",
+      `Error - This user is still assigned to: ${assignments}`,
     );
   }
   console.log(" no ");

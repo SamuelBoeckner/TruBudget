@@ -49,7 +49,8 @@ const Users = props => {
     tabIndex === 0 ? !allowedIntents.includes("global.createUser") : !allowedIntents.includes("global.createGroup");
   const onClick = () => (tabIndex === 0 ? showDashboardDialog("addUser") : showDashboardDialog("addGroup"));
   const permissionIconDisplayed = allowedIntents.includes("global.listPermissions");
-
+  console.log(enabledUsers);
+  console.log(disabledUsers);
   return (
     <div data-test="userdashboard" style={styles.container}>
       <div style={styles.customWidth}>
@@ -80,7 +81,12 @@ const Users = props => {
           </div>
         ) : null}
         {tabIndex === 0 && (
-          <UsersTable {...props} permissionIconDisplayed={permissionIconDisplayed} users={enabledUsers} />
+          <UsersTable
+            {...props}
+            permissionIconDisplayed={permissionIconDisplayed}
+            users={enabledUsers}
+            areUsersEnabled={true}
+          />
         )}
 
         {isDataLoading ? <div /> : tabIndex === 1 && <GroupTable {...props} />}
@@ -89,7 +95,12 @@ const Users = props => {
           <div />
         ) : (
           tabIndex === 2 && (
-            <UsersTable {...props} permissionIconDisplayed={permissionIconDisplayed} users={disabledUsers} />
+            <UsersTable
+              {...props}
+              permissionIconDisplayed={permissionIconDisplayed}
+              users={disabledUsers}
+              areUsersEnabled={false}
+            />
           )
         )}
       </div>

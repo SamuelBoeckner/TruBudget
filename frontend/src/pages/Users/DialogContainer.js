@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-
 import { toJS } from "../../helper";
 import withInitialLoading from "../Loading/withInitialLoading";
 import { showSnackbar, storeSnackbarMessage } from "../Notifications/actions";
