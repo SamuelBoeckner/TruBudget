@@ -42,16 +42,17 @@ const UsersTable = ({
   areUsersEnabled = false
 }) => {
   const [usersChanged, setUsersChanged] = useState(false);
-  const isInitialMount = useRef(true);
   let sortedUsers = sortUsers(users.filter(u => u.isGroup !== true));
 
   useEffect(() => {
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
-    } else {
+    if (usersChanged) {
       fetchUser();
       setUsersChanged(false);
     }
+    return () => {
+      fetchUser();
+      setUsersChanged(false);
+    };
   }, [usersChanged, fetchUser]);
 
   return sortedUsers.length > 0 ? (

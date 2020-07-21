@@ -200,7 +200,7 @@ describe("Login", function() {
       .click();
     cy.wait("@disableUserFail").then(xhr => {
       // Error because this user is still assigned to a project
-      expect(xhr.response.body.error.code).to.eql(500);
+      expect(xhr.response.body.error.code).to.eql(412);
     });
   });
 
@@ -219,7 +219,7 @@ describe("Login", function() {
       .click();
     cy.wait("@disableUserFail").then(xhr => {
       // Error because this user is still assigned to a subproject
-      expect(xhr.response.body.error.code).to.eql(500);
+      expect(xhr.response.body.error.code).to.eql(412);
     });
   });
 
@@ -238,7 +238,7 @@ describe("Login", function() {
       .click();
     cy.wait("@disableUserFail").then(xhr => {
       // Error because this user is still assigned to a workflowitem
-      expect(xhr.response.body.error.code).to.eql(500);
+      expect(xhr.response.body.error.code).to.eql(412);
     });
   });
 });
