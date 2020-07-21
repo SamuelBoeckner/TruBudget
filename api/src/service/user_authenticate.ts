@@ -8,11 +8,13 @@ import { getOrganizationAddress } from "../organization/organization";
 import * as Result from "../result";
 import * as AuthToken from "./domain/organization/auth_token";
 import { AuthenticationFailed } from "./errors/authentication_failed";
+import { NotAuthorized } from "./domain/errors/not_authorized";
 import { getGlobalPermissions } from "./global_permissions_get";
 import { getGroupsForUser } from "./group_query";
 import { importprivkey } from "./importprivkey";
 import { hashPassword, isPasswordMatch } from "./password";
 import * as UserQuery from "./user_query";
+import * as UserRecord from "./domain/organization/user_record";
 
 // Use root as the service user to ensure we see all the data:
 const rootUser = { id: "root", groups: [] };
@@ -95,6 +97,11 @@ async function authenticateUser(
     throw new AuthenticationFailed({ ctx, organization, userId });
   }
 
+  // Check if user has user.authenticate intent
+  if (!UserRecord.permits(userRecord, rootUser, ["user.authenticate"])) {
+    throw new NotAuthorized({ ctx, userId, intent: "user.authenticate" });
+  }
+
   // Every user has an address and an associated private key. Importing the private key
   // when authenticating a user allows users to roam freely between nodes of their
   // organization.
@@ -111,9 +118,9 @@ async function authenticateUser(
 
   try {
     return AuthToken.fromUserRecord(userRecord, {
-      getGroupsForUser: async id =>
-        getGroupsForUser(conn, ctx, rootUser, id).then(groups => groups.map(x => x.id)),
-      getOrganizationAddress: async orga => getOrganizationAddressOrThrow(conn, ctx, orga),
+      getGroupsForUser: async (id) =>
+        getGroupsForUser(conn, ctx, rootUser, id).then((groups) => groups.map((x) => x.id)),
+      getOrganizationAddress: async (orga) => getOrganizationAddressOrThrow(conn, ctx, orga),
       getGlobalPermissions: async () => getGlobalPermissions(conn, ctx, rootUser),
     });
   } catch (error) {

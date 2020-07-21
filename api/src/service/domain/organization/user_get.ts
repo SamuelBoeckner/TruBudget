@@ -17,10 +17,10 @@ export async function getOneUser(
   repository: Repository,
 ): Promise<Result.Type<UserRecord.UserRecord>> {
   const allEvents = await repository.getUserEvents();
+
   // Errors are ignored here:
   const { users } = sourceUserRecords(ctx, allEvents);
-
-  const userRecord = users.find(x => x.id === userId);
+  const userRecord = users.find((x) => x.id === userId);
   if (userRecord === undefined) {
     return new NotFound(ctx, "user", userId);
   }
