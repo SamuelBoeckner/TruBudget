@@ -25,7 +25,9 @@ import {
   showDashboardDialog,
   showPasswordDialog,
   storeGroupId,
-  storeGroupName
+  storeGroupName,
+  enableUser,
+  disableUser
 } from "./actions";
 import Users from "./Users";
 
@@ -56,7 +58,9 @@ class UserManagementContainer extends Component {
 const mapStateToProps = state => {
   return {
     allowedIntents: state.getIn(["login", "allowedIntents"]),
-    users: state.getIn(["login", "user"]),
+    // users: state.getIn(["login", "user"]), //Removed weil alle user sind in enabledUsers+disabledUsers enthalten
+    enabledUsers: state.getIn(["login", "enabledUsers"]),
+    disabledUsers: state.getIn(["login", "disabledUsers"]),
     userId: state.getIn(["login", "id"]),
     organization: state.getIn(["login", "organization"]),
     tabIndex: state.getIn(["users", "tabIndex"]),
@@ -96,7 +100,9 @@ const mapDispatchToProps = dispatch => {
     showPasswordDialog: editId => dispatch(showPasswordDialog(editId)),
     listGlobalPermissions: () => dispatch(listPermissions()),
     checkAndChangeUserPassword: (actingUser, username, userPassword, newPassword) =>
-      dispatch(checkAndChangeUserPassword(actingUser, username, userPassword, newPassword))
+      dispatch(checkAndChangeUserPassword(actingUser, username, userPassword, newPassword)),
+    enableUser: userId => dispatch(enableUser(userId)),
+    disableUser: userId => dispatch(disableUser(userId))
   };
 };
 

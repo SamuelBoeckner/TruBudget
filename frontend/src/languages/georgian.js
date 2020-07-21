@@ -104,7 +104,8 @@ const ka = {
     view: "ხილვა",
     workflowitem: "Workflowitem",
     dueDate: "თარიღით",
-    dueDate_exceeded: "დასრულდა თარიღი"
+    dueDate_exceeded: "დასრულდა თარიღი",
+    login_disabled: "შესვლის იდენტიფიკაცია გამორთულია"
   },
 
   users: {
@@ -134,7 +135,12 @@ const ka = {
     type_new_password: "აკრიფეთ ახალი პარული {0}",
     user_created: "მომხმარებელი წარმატებით შეიქმნა",
     username_invalid: "არასწორი პაროლი",
-    users: "მომხმარებლები"
+    users: "მომხმარებლები",
+    disabled_users: "დეაქტივირებული მომხმარებლები",
+    disable_user: "მომხმარებლის გამორთვა",
+    disable_user_successfull: "შემდეგი მომხმარებელი გამორთულია: ",
+    enable_user: "მომხმარებლის აღდგენა",
+    enable_user_successfull: "შემდეგი მომხმარებელი ჩართულია: "
   },
 
   userProfile: {

@@ -104,7 +104,8 @@ const en = {
     view: "View",
     workflowitem: "Workflowitem",
     dueDate: "Due date",
-    dueDate_exceeded: "Due date exceeded"
+    dueDate_exceeded: "Due date exceeded",
+    login_disabled: "Login-ID is disabled"
   },
 
   users: {
@@ -134,7 +135,12 @@ const en = {
     type_new_password: "Type in new password for {0}",
     user_created: "User successfully created",
     username_invalid: "Invalid login ID",
-    users: "Users"
+    users: "Users",
+    disabled_users: "Disabled users",
+    disable_user: "Disable user",
+    disable_user_successfull: "The following user has been disabled: ",
+    enable_user: "Restore user",
+    enable_user_successfull: "The following user has been enabled: "
   },
 
   userProfile: {

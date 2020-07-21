@@ -105,7 +105,8 @@ const pt = {
     view: "Visualizar",
     workflowitem: "Item de workflow",
     dueDate: "Data de vencimento",
-    dueDate_exceeded: "Data de vencimento excedida"
+    dueDate_exceeded: "Data de vencimento excedida",
+    login_disabled: "O ID de login está desativado"
   },
 
   users: {
@@ -135,7 +136,12 @@ const pt = {
     type_new_password: "Digite a nova senha para o {0}",
     user_created: "Usuário criado com sucesso",
     username_invalid: "Nome de usuário Inválido",
-    users: "Usuários"
+    users: "Usuários",
+    disabled_users: "Utilizadores desactivados",
+    disable_user: "Desactivar utilizador",
+    disable_user_successfull: "O seguinte utilizador foi desactivado: ",
+    enable_user: "Restaurar utilizador",
+    enable_user_successfull: "O seguinte utilizador foi activado: "
   },
 
   userProfile: {

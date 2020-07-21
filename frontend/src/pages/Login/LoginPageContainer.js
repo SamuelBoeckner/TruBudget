@@ -7,7 +7,6 @@ import {
   loginWithCredentials,
   logout,
   setLanguage,
-  showLoginError,
   storeEnvironment,
   storePassword,
   storeUsername
@@ -52,8 +51,6 @@ const mapDispatchToProps = dispatch => {
     storePassword: password => dispatch(storePassword(password)),
     logout: () => dispatch(logout()),
     loginWithCredentials: (username, password) => dispatch(loginWithCredentials(username, password)),
-    showLoginError: () => dispatch(showLoginError(true)),
-    hideLoginError: () => dispatch(showLoginError(false)),
     storeEnvironment: environment => dispatch(storeEnvironment(environment)),
     getEnvironment: () => dispatch(getEnvironment()),
     setLanguage: language => dispatch(setLanguage(language)),
@@ -66,7 +63,8 @@ const mapStateToProps = state => {
     username: state.getIn(["login", "username"]),
     jwt: state.getIn(["login", "jwt"]),
     password: state.getIn(["login", "password"]),
-    loginUnsuccessful: state.getIn(["login", "loginUnsuccessful"]),
+    loginPasswordError: state.getIn(["login", "loginPasswordError"]),
+    loginActivationError: state.getIn(["login", "loginActivationError"]),
     environment: state.getIn(["login", "environment"]),
     language: state.getIn(["login", "language"])
   };

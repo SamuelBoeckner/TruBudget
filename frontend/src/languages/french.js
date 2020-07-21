@@ -105,7 +105,8 @@ const fr = {
     view: "Vue",
     workflowitem: "Élement de workflow",
     dueDate: "Date d'échéance",
-    dueDate_exceeded: "Date d'échéance dépassée"
+    dueDate_exceeded: "Date d'échéance dépassée",
+    login_disabled: "L'identification de connexion est désactivée"
   },
 
   login: {
@@ -250,7 +251,12 @@ const fr = {
     type_new_password: "Tapez le nouveau mot de passe pour {0}",
     user_created: "Utilisateur créé avec succès",
     username_invalid: "Nom d'utilisateur invalide",
-    users: "Utilisateurs"
+    users: "Utilisateurs",
+    disabled_users: "Utilisateurs désactivés",
+    disable_user: "Désactiver l'utilisateur",
+    disable_user_successfull: "L'utilisateur suivant a été désactivé: ",
+    enable_user: "Restaurer l'utilisateur",
+    enable_user_successfull: "L'utilisateur suivant a été activé: "
   },
 
   nodesDashboard: {

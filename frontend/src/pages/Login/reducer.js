@@ -19,8 +19,8 @@ import {
   LOGIN_SUCCESS,
   LOGOUT_SUCCESS,
   SET_LANGUAGE,
-  SHOW_ADMIN_LOGIN_ERROR,
-  SHOW_LOGIN_ERROR,
+  SHOW_LOGIN_PASSWORD_ERROR,
+  SHOW_LOGIN_ACTIVATION_ERROR,
   STORE_ENVIRONMENT_SUCCESS,
   STORE_PASSWORD,
   STORE_USERNAME
@@ -39,11 +39,13 @@ export const defaultState = fromJS({
   avatar: "/lego_avatar_female2.jpg",
   environment: "Test",
   loginErrorMessage: "",
-  showLoginError: false,
   jwt: "",
   adminLoginFailed: false,
   language: "en-gb",
   user: [],
+  groupList: [],
+  enabledUsers: [],
+  disabledUsers: [],
   userDisplayNameMap: {},
   emailServiceAvailable: false
 });
@@ -82,11 +84,28 @@ export default function loginReducer(state = defaultState, action) {
     case STORE_PASSWORD:
       return state.set("password", action.password);
     case FETCH_USER_SUCCESS:
-      const userMap = {};
+      const userDisplayNameMap = {};
+      const enabledUsers = [];
+      const disabledUsers = [];
+      const groupList = [];
       action.user.forEach(user => {
-        userMap[user.id] = user.displayName;
+        userDisplayNameMap[user.id] = user.displayName;
+        if (!user.isGroup) {
+          user.permissions["user.authenticate"].includes(user.id) ? enabledUsers.push(user) : disabledUsers.push(user);
+        } else {
+          groupList.push(user);
+        }
       });
-      return state.merge({ user: fromJS(action.user), userDisplayNameMap: fromJS(userMap) });
+      return state.merge({
+        // All users: e.g. needed in histories (MAY BE NOT NEEDED ???)
+        user: fromJS(action.user),
+        groupList: fromJS(groupList),
+        userDisplayNameMap: fromJS(userDisplayNameMap),
+        // Only enabled users: e.g. needed for assignee-lists
+        enabledUsers: fromJS(enabledUsers),
+        // Only disabled users: e.g. needed to list only disabled users
+        disabledUsers: fromJS(disabledUsers)
+      });
     case FETCH_ADMIN_USER_SUCCESS:
       return state.merge({
         loggedInAdminUser: action.user,
@@ -109,10 +128,10 @@ export default function loginReducer(state = defaultState, action) {
       return state.merge({
         adminLoggedIn: true
       });
-    case SHOW_LOGIN_ERROR:
-      return state.set("loginUnsuccessful", action.show);
-    case SHOW_ADMIN_LOGIN_ERROR:
-      return state.set("adminLoginFailed", action.show);
+    case SHOW_LOGIN_PASSWORD_ERROR:
+      return state.set("loginPasswordError", action.show);
+    case SHOW_LOGIN_ACTIVATION_ERROR:
+      return state.set("loginActivationError", action.show);
     case STORE_ENVIRONMENT_SUCCESS:
     case FETCH_ENVIRONMENT_SUCCESS:
       return state.merge({

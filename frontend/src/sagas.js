@@ -43,7 +43,8 @@ import {
   LOGIN_SUCCESS,
   LOGOUT,
   LOGOUT_SUCCESS,
-  SHOW_LOGIN_ERROR,
+  SHOW_LOGIN_PASSWORD_ERROR,
+  SHOW_LOGIN_ACTIVATION_ERROR,
   STORE_ENVIRONMENT,
   STORE_ENVIRONMENT_SUCCESS
 } from "./pages/Login/actions";
@@ -147,7 +148,11 @@ import {
   REMOVE_USER,
   REMOVE_USER_SUCCESS,
   REVOKE_GLOBAL_PERMISSION,
-  REVOKE_GLOBAL_PERMISSION_SUCCESS
+  REVOKE_GLOBAL_PERMISSION_SUCCESS,
+  ENABLE_USER,
+  ENABLE_USER_SUCCESS,
+  DISABLE_USER,
+  DISABLE_USER_SUCCESS
 } from "./pages/Users/actions.js";
 import {
   ASSIGN_SUBPROJECT,
@@ -784,13 +789,12 @@ export function* markMultipleNotificationsAsReadSaga({ notificationIds, notifica
 export function* loginSaga({ user }) {
   function* login() {
     const { data } = yield callApi(api.login, user.username, user.password);
-
     yield put({
       type: LOGIN_SUCCESS,
       ...data
     });
     yield put({
-      type: SHOW_LOGIN_ERROR,
+      type: SHOW_LOGIN_PASSWORD_ERROR,
       show: false
     });
     yield put({
@@ -800,11 +804,30 @@ export function* loginSaga({ user }) {
       isWarning: false
     });
   }
+
   function* onLoginError(error) {
-    yield put({
-      type: SHOW_LOGIN_ERROR,
-      show: true
-    });
+    if (error.response.status === 403) {
+      // user is disabled
+      yield put({
+        type: SHOW_LOGIN_ACTIVATION_ERROR,
+        show: true
+      });
+      yield put({
+        type: SHOW_LOGIN_PASSWORD_ERROR,
+        show: false
+      });
+    } else {
+      // password is wrong
+      yield put({
+        type: SHOW_LOGIN_ACTIVATION_ERROR,
+        show: false
+      });
+      yield put({
+        type: SHOW_LOGIN_PASSWORD_ERROR,
+        show: true
+      });
+    }
+
     yield handleError(error);
   }
   yield execute(login, true, onLoginError);
@@ -947,6 +970,23 @@ export function* checkAndChangeUserPasswordSaga({ username, actingUser, currentP
   } catch (error) {
     yield handleError(error);
   }
+}
+
+export function* enableUserSaga({ userId }) {
+  yield execute(function*() {
+    yield callApi(api.enableUser, userId);
+    yield put({
+      type: ENABLE_USER_SUCCESS
+    });
+  }, true);
+}
+export function* disableUserSaga({ userId }) {
+  yield execute(function*() {
+    yield callApi(api.disableUser, userId);
+    yield put({
+      type: DISABLE_USER_SUCCESS
+    });
+  }, true);
 }
 
 export function* removeUserFromGroupSaga({ groupId, userId }) {
@@ -2264,6 +2304,8 @@ export default function* rootSaga() {
 
       // Users
       yield takeEvery(CHECK_AND_CHANGE_USER_PASSWORD, checkAndChangeUserPasswordSaga),
+      yield takeEvery(ENABLE_USER, enableUserSaga),
+      yield takeEvery(DISABLE_USER, disableUserSaga),
 
       // LiveUpdates
       yield takeLeading(LIVE_UPDATE_PROJECT, liveUpdateProjectSaga),

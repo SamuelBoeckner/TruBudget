@@ -105,7 +105,8 @@ const de = {
     history_end: "Keine weiteren Ereignisse",
     no_history: "Keine Ereignisse",
     dueDate: "Fälligkeitsdatum",
-    dueDate_exceeded: "Fälligkeitsdatum überschritten"
+    dueDate_exceeded: "Fälligkeitsdatum überschritten",
+    login_disabled: "Login-ID ist deaktiviert"
   },
 
   login: {
@@ -248,7 +249,12 @@ const de = {
     password_conditions_letter: "Mindestens einen Buchstaben enthalten",
     password_conditions_number: "Mindestens eine Zahl enthalten",
     privacy_notice:
-      "Bitte stellen Sie sicher, dass Sie keine persönlichen Informationen angeben. Durch Klicken auf SUBMIT werden Ihre Daten dauerhaft gespeichert und hiermit der Erhalt des Datenschutzhinweises bestätigt."
+      "Bitte stellen Sie sicher, dass Sie keine persönlichen Informationen angeben. Durch Klicken auf SUBMIT werden Ihre Daten dauerhaft gespeichert und hiermit der Erhalt des Datenschutzhinweises bestätigt.",
+    disabled_users: "Deaktivierte Benutzer",
+    disable_user: "Benutzer deaktivieren",
+    disable_user_successfull: "Folgender Benutzer wurde deaktiviert: ",
+    enable_user: "Benutzer wiederherstellen",
+    enable_user_successfull: "Folgender Benutzer wurde wiederhergestellt: "
   },
   userProfile: {
     invalid_email_address: "Ungültige Emailadresse"

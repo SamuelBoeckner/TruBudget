@@ -7,9 +7,10 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import EditIcon from "@material-ui/icons/Edit";
 import PermissionIcon from "@material-ui/icons/LockOpen";
+import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import _sortBy from "lodash/sortBy";
-import React from "react";
-
+import React, { useEffect, useState, useRef } from "react";
 import strings from "../../localizeStrings";
 import ActionButton from "../Common/ActionButton";
 import { UserEmptyState } from "./UsersGroupsEmptyStates";
@@ -31,9 +32,27 @@ const UsersTable = ({
   showPasswordDialog,
   userId,
   isRoot,
-  isDataLoading
+  isDataLoading,
+  disableUser,
+  enableUser,
+  fetchUser,
+  allowedIntents,
+  showSnackbar,
+  storeSnackbarMessage,
+  areUsersEnabled = false
 }) => {
-  const sortedUsers = sortUsers(users.filter(u => u.isGroup !== true));
+  const [usersChanged, setUsersChanged] = useState(false);
+  const isInitialMount = useRef(true);
+  let sortedUsers = sortUsers(users.filter(u => u.isGroup !== true));
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+    } else {
+      fetchUser();
+      setUsersChanged(false);
+    }
+  }, [usersChanged, fetchUser]);
 
   return sortedUsers.length > 0 ? (
     <Paper>
@@ -55,6 +74,12 @@ const UsersTable = ({
                 user.permissions &&
                 user.permissions.hasOwnProperty("user.changePassword") &&
                 user.permissions["user.changePassword"].some(x => x === userId);
+
+              // Define if enable- or disable-button is shown
+              const hasPermission =
+                allowedIntents.includes("global.enableUser") && allowedIntents.includes("global.disableUser");
+              const canEnableUser = !areUsersEnabled && hasPermission;
+              const canDisableUser = areUsersEnabled && hasPermission;
 
               return (
                 <TableRow data-test={`user-${user.id}`} key={user.id}>
@@ -79,6 +104,30 @@ const UsersTable = ({
                         icon={<EditIcon />}
                         data-test={`edit-user-${user.id}`}
                       />
+                      <ActionButton
+                        onClick={() => {
+                          disableUser(user.id);
+                          setUsersChanged(true);
+                          storeSnackbarMessage(strings.users.disable_user_successfull + user.id);
+                          showSnackbar();
+                        }}
+                        notVisible={!canDisableUser && !isRoot}
+                        title={strings.users.disable_user}
+                        icon={<RemoveCircleIcon />}
+                        data-test={`disable-user-${user.id}`}
+                      />
+                      <ActionButton
+                        onClick={() => {
+                          enableUser(user.id);
+                          setUsersChanged(true);
+                          storeSnackbarMessage(strings.users.enable_user_successfull + user.id);
+                          showSnackbar();
+                        }}
+                        notVisible={!canEnableUser && !isRoot}
+                        title={strings.users.enable_user}
+                        icon={<CheckCircleIcon />}
+                        data-test={`enable-user-${user.id}`}
+                      />
                     </div>
                   </TableCell>
                 </TableRow>
@@ -88,8 +137,8 @@ const UsersTable = ({
         )}
       </Table>
     </Paper>
-  ) : (
+  ) : areUsersEnabled ? (
     <UserEmptyState />
-  );
+  ) : null;
 };
 export default withStyles(styles)(UsersTable);

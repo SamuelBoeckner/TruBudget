@@ -38,9 +38,13 @@ class PermissionSelection extends Component {
     };
   }
 
-  resolveSelections = (user, permissions) => {
-    if (_isEmpty(user) || _isEmpty(permissions)) return [];
-    return permissions.map(id => user.find(u => u.id === id)).map(u => u.displayName);
+  resolveSelections = (userList, permissions) => {
+    if (_isEmpty(userList) || _isEmpty(permissions)) return [];
+
+    return permissions
+      .map(id => userList.find(u => u.id === id))
+      .filter(userWithPermission => userWithPermission)
+      .map(u => u.displayName);
   };
 
   renderUserSelection = () => {
