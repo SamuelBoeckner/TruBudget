@@ -54,9 +54,15 @@ describe("Login", function() {
     cy.wait("@createUser");
     cy.wait("@userList");
     // Check user list
-    cy.get("[aria-label=usersTab]").click();
+    cy.get("[aria-label=usersTab]")
+      .should("be.visible")
+      .click();
+    cy.wait("@userList");
     cy.get(`[data-test=user-${userId}]`).should("be.visible");
-    cy.get("[aria-label=disabledUsersTab]").click();
+    cy.get("[aria-label=disabledUsersTab]")
+      .should("be.visible")
+      .click();
+    cy.wait("@userList");
     cy.get(`[data-test=user-${userId}]`).should("not.be.visible");
   });
 
@@ -76,9 +82,15 @@ describe("Login", function() {
     cy.wait("@disableUser");
     cy.wait("@userList");
     // Check disabled-user list
-    cy.get("[aria-label=usersTab]").click();
+    cy.get("[aria-label=usersTab]")
+      .should("be.visible")
+      .click();
+    cy.wait("@userList");
     cy.get(`[data-test=user-${userId}]`).should("not.be.visible");
-    cy.get("[aria-label=disabledUsersTab]").click();
+    cy.get("[aria-label=disabledUsersTab]")
+      .should("be.visible")
+      .click();
+    cy.wait("@userList");
     cy.get(`[data-test=user-${userId}]`).should("be.visible");
   });
 
@@ -114,7 +126,10 @@ describe("Login", function() {
       .click();
     cy.wait("@userList");
     cy.get(`[data-test=user-${userId}]`).should("be.visible");
-    cy.get("[aria-label=disabledUsersTab]").click();
+    cy.get("[aria-label=disabledUsersTab]")
+      .should("be.visible")
+      .click();
+    cy.wait("@userList");
     cy.get(`[data-test=user-${userId}]`).should("not.be.visible");
   });
 
