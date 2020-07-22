@@ -38,7 +38,7 @@ const UsersTable = ({
   allowedIntents,
   showSnackbar,
   storeSnackbarMessage,
-  areUsersEnabled = false
+  areUsersEnabled = true
 }) => {
   let sortedUsers = sortUsers(users.filter(u => u.isGroup !== true));
 
@@ -98,7 +98,7 @@ const UsersTable = ({
                           storeSnackbarMessage(strings.users.disable_user_successfull + user.id);
                           showSnackbar();
                         }}
-                        notVisible={!canDisableUser && !isRoot}
+                        notVisible={!canDisableUser && !(isRoot && areUsersEnabled)}
                         title={strings.users.disable_user}
                         icon={<RemoveCircleIcon />}
                         data-test={`disable-user-${user.id}`}
@@ -109,7 +109,7 @@ const UsersTable = ({
                           storeSnackbarMessage(strings.users.enable_user_successfull + user.id);
                           showSnackbar();
                         }}
-                        notVisible={!canEnableUser && !isRoot}
+                        notVisible={!canEnableUser && !(isRoot && !areUsersEnabled)}
                         title={strings.users.enable_user}
                         icon={<CheckCircleIcon />}
                         data-test={`enable-user-${user.id}`}
