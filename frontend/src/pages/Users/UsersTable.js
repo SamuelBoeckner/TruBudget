@@ -41,19 +41,31 @@ const UsersTable = ({
   storeSnackbarMessage,
   areUsersEnabled = false
 }) => {
-  const [usersChanged, setUsersChanged] = useState(false);
+  const [userDisabled, setUserDisabled] = useState(false);
+  const [userEnabled, setUserEnabled] = useState(false);
   let sortedUsers = sortUsers(users.filter(u => u.isGroup !== true));
 
   useEffect(() => {
-    if (usersChanged) {
+    if (userDisabled) {
       fetchUser();
-      setUsersChanged(false);
+      setUserDisabled(false);
     }
     return () => {
       fetchUser();
-      setUsersChanged(false);
+      setUserDisabled(false);
     };
-  }, [usersChanged, fetchUser]);
+  }, [userDisabled, fetchUser]);
+
+  useEffect(() => {
+    if (userEnabled) {
+      fetchUser();
+      setUserEnabled(false);
+    }
+    return () => {
+      fetchUser();
+      setUserEnabled(false);
+    };
+  }, [userEnabled, fetchUser]);
 
   return sortedUsers.length > 0 ? (
     <Paper>
@@ -108,7 +120,7 @@ const UsersTable = ({
                       <ActionButton
                         onClick={() => {
                           disableUser(user.id);
-                          setUsersChanged(true);
+                          setUserDisabled(true);
                           storeSnackbarMessage(strings.users.disable_user_successfull + user.id);
                           showSnackbar();
                         }}
@@ -120,7 +132,7 @@ const UsersTable = ({
                       <ActionButton
                         onClick={() => {
                           enableUser(user.id);
-                          setUsersChanged(true);
+                          setUserEnabled(true);
                           storeSnackbarMessage(strings.users.enable_user_successfull + user.id);
                           showSnackbar();
                         }}
