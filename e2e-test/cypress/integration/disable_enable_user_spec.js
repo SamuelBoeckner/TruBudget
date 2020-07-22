@@ -57,7 +57,6 @@ describe("Login", function() {
     cy.get("[aria-label=usersTab]")
       .should("be.visible")
       .click();
-    cy.wait("@userList");
     cy.get(`[data-test=user-${userId}]`).should("be.visible");
     cy.get("[aria-label=disabledUsersTab]")
       .should("be.visible")
@@ -79,7 +78,7 @@ describe("Login", function() {
     cy.get(`[data-test=disable-user-${userId}]`)
       .should("be.visible")
       .click();
-    cy.wait("@disableUser");
+    cy.wait("@disableUser", { timeout: 60000 });
     cy.wait("@userList");
     // Check disabled-user list
     cy.get("[aria-label=usersTab]")
@@ -108,7 +107,7 @@ describe("Login", function() {
     cy.get(`[data-test=disable-user-${userId}]`)
       .should("be.visible")
       .click();
-    cy.wait("@disableUser");
+    cy.wait("@disableUser", { timeout: 60000 });
     cy.wait("@userList");
     // Restore user
     cy.get("[aria-label=disabledUsersTab]")
@@ -118,7 +117,7 @@ describe("Login", function() {
     cy.get(`[data-test=enable-user-${userId}]`)
       .should("be.visible")
       .click();
-    cy.wait("@enableUser");
+    cy.wait("@enableUser", { timeout: 60000 });
     cy.wait("@userList");
     // Check user list
     cy.get("[aria-label=usersTab]")
@@ -147,7 +146,7 @@ describe("Login", function() {
     cy.get(`[data-test=disable-user-${userId}]`)
       .should("be.visible")
       .click();
-    cy.wait("@disableUser");
+    cy.wait("@disableUser", { timeout: 60000 });
     cy.wait("@userList");
     // Logout
     logout();
@@ -176,7 +175,7 @@ describe("Login", function() {
     cy.get(`[data-test=disable-user-${userId}]`)
       .should("be.visible")
       .click();
-    cy.wait("@disableUser");
+    cy.wait("@disableUser", { timeout: 60000 });
     cy.wait("@userList");
     cy.get("[aria-label=disabledUsersTab]")
       .should("be.visible")
@@ -185,7 +184,7 @@ describe("Login", function() {
     cy.get(`[data-test=enable-user-${userId}]`)
       .should("be.visible")
       .click();
-    cy.wait("@enableUser");
+    cy.wait("@enableUser", { timeout: 60000 });
     cy.wait("@userList");
     // Logout
     logout();

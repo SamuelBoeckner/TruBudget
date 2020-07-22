@@ -10,7 +10,7 @@ import PermissionIcon from "@material-ui/icons/LockOpen";
 import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import _sortBy from "lodash/sortBy";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import strings from "../../localizeStrings";
 import ActionButton from "../Common/ActionButton";
 import { UserEmptyState } from "./UsersGroupsEmptyStates";
