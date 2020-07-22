@@ -10,7 +10,7 @@ import PermissionIcon from "@material-ui/icons/LockOpen";
 import RemoveCircleIcon from "@material-ui/icons/RemoveCircle";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 import _sortBy from "lodash/sortBy";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import strings from "../../localizeStrings";
 import ActionButton from "../Common/ActionButton";
 import { UserEmptyState } from "./UsersGroupsEmptyStates";
@@ -35,37 +35,12 @@ const UsersTable = ({
   isDataLoading,
   disableUser,
   enableUser,
-  fetchUser,
   allowedIntents,
   showSnackbar,
   storeSnackbarMessage,
   areUsersEnabled = false
 }) => {
-  const [userDisabled, setUserDisabled] = useState(false);
-  const [userEnabled, setUserEnabled] = useState(false);
   let sortedUsers = sortUsers(users.filter(u => u.isGroup !== true));
-
-  useEffect(() => {
-    if (userDisabled) {
-      fetchUser();
-      setUserDisabled(false);
-    }
-    return () => {
-      fetchUser();
-      setUserDisabled(false);
-    };
-  }, [userDisabled, fetchUser]);
-
-  useEffect(() => {
-    if (userEnabled) {
-      fetchUser();
-      setUserEnabled(false);
-    }
-    return () => {
-      fetchUser();
-      setUserEnabled(false);
-    };
-  }, [userEnabled, fetchUser]);
 
   return sortedUsers.length > 0 ? (
     <Paper>
@@ -120,7 +95,6 @@ const UsersTable = ({
                       <ActionButton
                         onClick={() => {
                           disableUser(user.id);
-                          setUserDisabled(true);
                           storeSnackbarMessage(strings.users.disable_user_successfull + user.id);
                           showSnackbar();
                         }}
@@ -132,7 +106,6 @@ const UsersTable = ({
                       <ActionButton
                         onClick={() => {
                           enableUser(user.id);
-                          setUserEnabled(true);
                           storeSnackbarMessage(strings.users.enable_user_successfull + user.id);
                           showSnackbar();
                         }}

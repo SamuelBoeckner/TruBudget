@@ -978,6 +978,10 @@ export function* enableUserSaga({ userId }) {
     yield put({
       type: ENABLE_USER_SUCCESS
     });
+    yield put({
+      type: FETCH_USER,
+      show: true
+    });
   }, true);
 }
 export function* disableUserSaga({ userId }) {
@@ -985,6 +989,10 @@ export function* disableUserSaga({ userId }) {
     yield callApi(api.disableUser, userId);
     yield put({
       type: DISABLE_USER_SUCCESS
+    });
+    yield put({
+      type: FETCH_USER,
+      show: true
     });
   }, true);
 }
