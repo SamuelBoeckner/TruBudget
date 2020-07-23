@@ -7,6 +7,8 @@ import { ServiceUser } from "./domain/organization/service_user";
 import { getGlobalPermissions } from "./global_permissions_get";
 import { groupExists } from "./group_query";
 import { store } from "./store";
+import { VError } from "verror";
+import * as Result from "../result";
 
 interface Group {
   id: string;
@@ -19,17 +21,13 @@ export async function createGroup(
   ctx: Ctx,
   serviceUser: ServiceUser,
   requestData: GroupCreate.RequestData,
-): Promise<Group> {
-  const { newEvents, errors } = await GroupCreate.createGroup(ctx, serviceUser, requestData, {
+): Promise<Result.Type<Group>> {
+  const groupCreateResult = await GroupCreate.createGroup(ctx, serviceUser, requestData, {
     getGlobalPermissions: async () => getGlobalPermissions(conn, ctx, serviceUser),
-    groupExists: async groupId => groupExists(conn, ctx, serviceUser, groupId),
+    groupExists: async (groupId) => groupExists(conn, ctx, serviceUser, groupId),
   });
-  if (errors.length > 0) return Promise.reject(errors);
-  if (!newEvents.length) {
-    const msg = "failed to create group";
-    logger.error({ ctx, serviceUser, requestData }, msg);
-    throw new Error(msg);
-  }
+  if (Result.isErr(groupCreateResult)) throw new VError(groupCreateResult, "create group failed");
+  const newEvents = groupCreateResult;
 
   for (const event of newEvents) {
     await store(conn, ctx, event);
