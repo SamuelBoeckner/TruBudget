@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed a bug where all displayed versions disappeared after switching page [#512](https://github.com/openkfw/TruBudget/issues/512)
 - Prevent a user from revoking a permission from him-/herself at workflowitem level [#514](https://github.com/openkfw/TruBudget/issues/514)
 - Prevent creating a closed workflowitem, subproject or project [#411](https://github.com/openkfw/TruBudget/issues/411)
+- Allow typing a comma separator when editing a projected budget [#517](https://github.com/openkfw/TruBudget/issues/517)
 
 <!-- ### Changed -->
 
