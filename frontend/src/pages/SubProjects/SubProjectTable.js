@@ -98,7 +98,7 @@ const displaySubprojectBudget = budgets => {
               </Avatar>
             }
             label={toAmountString(
-              consolidatedBudgets[currencyCode].reduce((acc, next) => acc + parseFloat(next.value), 0),
+              consolidatedBudgets[currencyCode].reduce((acc, next) => acc + next.value, 0),
               currencyCode
             )}
           />
