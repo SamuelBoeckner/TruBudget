@@ -9,20 +9,20 @@ import * as GlobalPermissions from "../workflow/global_permissions";
 
 const ctx: Ctx = { requestId: "", source: "test" };
 const root: ServiceUser = { id: "root", groups: [] };
-const bob: ServiceUser = { id: "bob", groups: [] };
-const charlie: ServiceUser = { id: "charlie", groups: [] };
+const adminUser: ServiceUser = { id: "adminUser", groups: [] };
+const testUser: ServiceUser = { id: "testUser", groups: [] };
 const orgaA = "orgaA";
 const otherOrganization = "otherOrganization";
 
 const basePermissions: GlobalPermissions.GlobalPermissions = {
-  permissions: { "global.enableUser": ["bob"] },
+  permissions: { "global.enableUser": ["adminUser"] },
   log: [],
 };
 
 const baseUser: UserRecord = {
-  id: "dummy",
+  id: "baseUser",
   createdAt: new Date().toISOString(),
-  displayName: "dummy",
+  displayName: "baseUser",
   organization: orgaA,
   passwordHash: "12345",
   address: "12345",
@@ -33,7 +33,7 @@ const baseUser: UserRecord = {
 };
 
 const requestData: RequestData = {
-  userId: "dummy",
+  userId: "baseUser",
 };
 
 const baseRepository = {
@@ -43,7 +43,7 @@ const baseRepository = {
 
 describe("enable users: permissions", () => {
   it("Without the global.enableUser permission, a user cannot enable users", async () => {
-    const result = await enableUser(ctx, charlie, orgaA, requestData, {
+    const result = await enableUser(ctx, testUser, orgaA, requestData, {
       ...baseRepository,
     });
 
@@ -60,7 +60,7 @@ describe("enable users: permissions", () => {
   });
 
   it("A user can enable users if the correct permissions are given", async () => {
-    const result = await enableUser(ctx, bob, orgaA, requestData, {
+    const result = await enableUser(ctx, adminUser, orgaA, requestData, {
       ...baseRepository,
     });
     if (Result.isErr(result)) {
@@ -79,7 +79,7 @@ describe("enable users: permissions", () => {
   });
 
   it("A user cannot enable users from other organizations", async () => {
-    const result = await enableUser(ctx, bob, otherOrganization, requestData, {
+    const result = await enableUser(ctx, adminUser, otherOrganization, requestData, {
       ...baseRepository,
     });
     assert.isTrue(Result.isErr(result));

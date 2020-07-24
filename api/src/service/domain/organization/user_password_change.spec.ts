@@ -75,7 +75,6 @@ describe("change a user's password: authorization", () => {
     assert.isTrue(result.length > 0);
   });
 
-  // NEWWWWWW
   it("A user  cannot revoke global permissions to users from other organizations", async () => {
     const result = await changeUserPassword(ctx, alice, orga, requestData, {
       ...baseRepository,

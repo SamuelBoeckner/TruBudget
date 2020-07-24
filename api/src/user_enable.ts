@@ -81,7 +81,7 @@ interface Service {
     issuer: ServiceUser,
     issuerOrganization: string,
     requestData: UserEnable.RequestData,
-  ): Promise<void>;
+  ): Promise<Result.Type<void>>;
 }
 
 export function addHttpHandler(server: FastifyInstance, urlPrefix: string, service: Service) {
@@ -107,7 +107,8 @@ export function addHttpHandler(server: FastifyInstance, urlPrefix: string, servi
 
     service
       .enableUser(ctx, issuer, issuerOrganization, revokee)
-      .then(() => {
+      .then((result) => {
+        if (Result.isErr(result)) throw new VError(result, "global.enableUser failed");
         const code = 200;
         const body = {
           apiVersion: "1.0",

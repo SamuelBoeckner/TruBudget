@@ -1,5 +1,6 @@
 import Joi = require("joi");
 import isEqual = require("lodash.isequal");
+import isEmpty = require("lodash.isempty");
 import Intent from "../../../authz/intents";
 import { Ctx } from "../../../lib/ctx";
 import * as Result from "../../../result";
@@ -12,10 +13,8 @@ import * as UserEventSourcing from "./user_eventsourcing";
 import * as UserDisabled from "./user_disabled";
 import * as UserRecord from "./user_record";
 import * as GlobalPermissions from "../workflow/global_permissions";
-import * as Project from "../workflow/project";
-import * as Subproject from "../workflow/subproject";
-import * as Workflowitem from "../workflow/workflowitem";
-import { map } from "../../../result";
+import * as UserAssignments from "../workflow/user_assignments";
+import * as UserAssignmentsGet from "../workflow/user_assignments_get";
 
 export interface RequestData {
   userId: string;
@@ -30,68 +29,10 @@ export function validate(input: any): Result.Type<RequestData> {
   return !error ? value : error;
 }
 
-function formatAssignments(projectNames, subprojectNames, workflowitemNames) {
-  let projects = "Assigned projects: ";
-  let subprojects = "Assigned subprojects: ";
-  let workflowitems = "Assigned workflowitems: ";
-  projectNames.map((name) => (projects = projects + name + ", "));
-  subprojectNames.map((name) => (subprojects = subprojects + name + ", "));
-  workflowitemNames.map((name) => (workflowitems = workflowitems + name + ", "));
-  return projects + subprojects + workflowitems;
-}
-
 interface Repository {
   getUser(userId: string): Promise<Result.Type<UserRecord.UserRecord>>;
   getGlobalPermissions(): Promise<GlobalPermissions.GlobalPermissions>;
-  getAllProjects(): Promise<Project.Project[]>;
-  getSubprojects(projectId: string): Promise<Result.Type<Subproject.Subproject[]>>;
-  getWorkflowitems(
-    projectId: string,
-    subprojectId: string,
-  ): Promise<Result.Type<Workflowitem.Workflowitem[]>>;
-}
-
-async function checkAssignments(repository: Repository, userToDisable: string) {
-  const assignedProjects: Project.Project[] = [];
-  const assignedSubprojects: Subproject.Subproject[] = [];
-  const assignedWorkflowitems: Workflowitem.Workflowitem[] = [];
-
-  const projects = await repository.getAllProjects();
-  for await (const project of projects) {
-    if (project.status === "closed") continue;
-    if (project.assignee === userToDisable) {
-      assignedProjects.push(project);
-    }
-    const subprojects = await repository.getSubprojects(project.id);
-    if (Result.isErr(subprojects)) continue;
-    for await (const subproject of subprojects) {
-      if (subproject.status === "closed") continue;
-      if (subproject.assignee === userToDisable) {
-        assignedSubprojects.push(subproject);
-      }
-      const workflowitems = await repository.getWorkflowitems(project.id, subproject.id);
-      if (Result.isErr(workflowitems)) continue;
-      for await (const workflowitem of workflowitems) {
-        if (workflowitem.status === "closed") continue;
-        if (workflowitem.assignee === userToDisable) {
-          assignedWorkflowitems.push(workflowitem);
-        }
-      }
-    }
-  }
-  if (
-    assignedProjects.length === 0 &&
-    assignedSubprojects.length === 0 &&
-    assignedWorkflowitems.length === 0
-  ) {
-    return false;
-  } else {
-    const projectNames = assignedProjects.map((x) => x.displayName);
-    const subprojectNames = assignedSubprojects.map((x) => x.displayName);
-    const workflowitemNames = assignedWorkflowitems.map((x) => x.displayName);
-
-    return formatAssignments(projectNames, subprojectNames, workflowitemNames);
-  }
+  getUserAssignments(userId: string): Promise<UserAssignments.UserAssignments>;
 }
 
 export async function disableUser(
@@ -145,13 +86,12 @@ export async function disableUser(
     }
   }
 
-  // Check if user is assigned to project / subproject / workflowitem
-  const assignments = await checkAssignments(repository, userToDisable);
-  if (assignments) {
+  const assignments = await repository.getUserAssignments(userToDisable);
+  if (!isEmpty(assignments)) {
     return new PreconditionError(
       ctx,
       userDisabled,
-      `Error - This user is still assigned to: ${assignments}`,
+      `Error - This user is still assigned to: ${UserAssignmentsGet.toString(assignments)}`,
     );
   }
 

@@ -7,26 +7,27 @@ import { ServiceUser } from "../organization/service_user";
 import { disableUser, RequestData } from "./user_disable";
 import { UserRecord } from "./user_record";
 import * as GlobalPermissions from "../workflow/global_permissions";
+import * as UserAssignments from "../workflow/user_assignments";
 import * as Project from "../workflow/project";
 import * as Subproject from "../workflow/subproject";
 import * as Workflowitem from "../workflow/workflowitem";
 
 const ctx: Ctx = { requestId: "", source: "test" };
 const root: ServiceUser = { id: "root", groups: [] };
-const bob: ServiceUser = { id: "bob", groups: [] };
-const charlie: ServiceUser = { id: "charlie", groups: [] };
+const userAdmin: ServiceUser = { id: "userAdmin", groups: [] };
+const normalUser: ServiceUser = { id: "normalUser", groups: [] };
 const orgaA = "orgaA";
 const otherOrganization = "otherOrganization";
 
 const basePermissions: GlobalPermissions.GlobalPermissions = {
-  permissions: { "global.disableUser": ["bob"] },
+  permissions: { "global.disableUser": ["userAdmin"] },
   log: [],
 };
 
 const baseUser: UserRecord = {
-  id: "dummy",
+  id: "baseUser",
   createdAt: new Date().toISOString(),
-  displayName: "dummy",
+  displayName: "baseUser",
   organization: orgaA,
   passwordHash: "12345",
   address: "12345",
@@ -37,16 +38,16 @@ const baseUser: UserRecord = {
 };
 
 const requestData: RequestData = {
-  userId: "dummy",
+  userId: "baseUser",
 };
 
 const baseProject: Project.Project = {
-  assignee: undefined,
+  assignee: "baseUser",
   id: "projectId",
   createdAt: new Date().toISOString(),
   status: "open",
-  displayName: "dummy",
-  description: "dummy",
+  displayName: "baseUser",
+  description: "baseUser",
   projectedBudgets: [],
   permissions: {},
   log: [],
@@ -55,13 +56,13 @@ const baseProject: Project.Project = {
 };
 
 const baseSubproject: Subproject.Subproject = {
-  assignee: undefined,
+  assignee: "baseUser",
   projectId: "projectId",
   id: "subprojectId",
   createdAt: new Date().toISOString(),
   status: "open",
-  displayName: "dummy",
-  description: "dummy",
+  displayName: "baseUser",
+  description: "baseUser",
   currency: "EUR",
   projectedBudgets: [],
   workflowitemOrdering: [],
@@ -71,15 +72,15 @@ const baseSubproject: Subproject.Subproject = {
 };
 
 const baseWorkflowitem: Workflowitem.Workflowitem = {
-  assignee: undefined,
+  assignee: "baseUser",
   isRedacted: false,
   id: "workflowitemId",
   subprojectId: "subprojectId",
   createdAt: new Date().toISOString(),
   dueDate: new Date().toISOString(),
   status: "open",
-  displayName: "dummy",
-  description: "dummy",
+  displayName: "baseUser",
+  description: "baseUser",
   amountType: "N/A",
   documents: [],
   permissions: {},
@@ -88,17 +89,17 @@ const baseWorkflowitem: Workflowitem.Workflowitem = {
   workflowitemType: "general",
 };
 
+const baseUserAssignments: UserAssignments.UserAssignments = {};
+
 const baseRepository = {
   getGlobalPermissions: async () => basePermissions,
   getUser: async () => baseUser,
-  getAllProjects: async () => [],
-  getSubprojects: async (_pId) => [],
-  getWorkflowitems: async (_pId, _spId) => [],
+  getUserAssignments: async () => baseUserAssignments,
 };
 
 describe("Disable users: permissions", () => {
   it("Without the global.disableUser permission, a user cannot disable users", async () => {
-    const result = await disableUser(ctx, charlie, orgaA, requestData, {
+    const result = await disableUser(ctx, normalUser, orgaA, requestData, {
       ...baseRepository,
     });
 
@@ -115,7 +116,7 @@ describe("Disable users: permissions", () => {
   });
 
   it("A user can disable users if the correct permissions are given", async () => {
-    const result = await disableUser(ctx, bob, orgaA, requestData, {
+    const result = await disableUser(ctx, userAdmin, orgaA, requestData, {
       ...baseRepository,
     });
     if (Result.isErr(result)) {
@@ -134,7 +135,7 @@ describe("Disable users: permissions", () => {
   });
 
   it("A user cannot disable users from other organizations", async () => {
-    const result = await disableUser(ctx, bob, otherOrganization, requestData, {
+    const result = await disableUser(ctx, userAdmin, otherOrganization, requestData, {
       ...baseRepository,
     });
     assert.isTrue(Result.isErr(result));
@@ -142,27 +143,27 @@ describe("Disable users: permissions", () => {
   });
 });
 
-describe("Disable users: Check all Assignees", () => {
-  // User is still assigned to Project
+describe("Disable users: Check Assigments", () => {
   it("If the user is assigned to a project, the user cannot be disabled", async () => {
-    const result = await disableUser(ctx, bob, orgaA, requestData, {
+    const assignedProject = { ...baseProject, assignee: requestData.userId };
+    const result = await disableUser(ctx, userAdmin, orgaA, requestData, {
       ...baseRepository,
-      getAllProjects: async () => [{ ...baseProject, assignee: requestData.userId }],
-      getSubprojects: async (_pId) => [],
-      getWorkflowitems: async (_pId, _spId) => [],
+      getUserAssignments: async () => {
+        return { ...baseUserAssignments, projects: [assignedProject] };
+      },
     });
 
-    // PreconditionError because dummy is assigned for project:
+    // PreconditionError because baseUser is assigned for project:
     assert.isTrue(Result.isErr(result));
     assert.instanceOf(result, PreconditionError);
   });
 
-  it("If the user is not assigned to a project, the user can be disabled", async () => {
-    const result = await disableUser(ctx, bob, orgaA, requestData, {
+  it("If the user is not assigned to any project/subproject/workflowitem, the user can be disabled", async () => {
+    const result = await disableUser(ctx, userAdmin, orgaA, requestData, {
       ...baseRepository,
-      getAllProjects: async () => [{ ...baseProject, assignee: undefined }],
-      getSubprojects: async (_pId) => [],
-      getWorkflowitems: async (_pId, _spId) => [],
+      getUserAssignments: async () => {
+        return { ...baseUserAssignments };
+      },
     });
     if (Result.isErr(result)) {
       throw result;
@@ -171,61 +172,31 @@ describe("Disable users: Check all Assignees", () => {
     assert.isTrue(result.length > 0);
   });
 
-  // User is still assigned to Subproject
   it("If the user is assigned to a subproject, the user cannot be disabled", async () => {
-    const result = await disableUser(ctx, bob, orgaA, requestData, {
+    const assignedSubproject = { ...baseSubproject, assignee: requestData.userId };
+    const result = await disableUser(ctx, userAdmin, orgaA, requestData, {
       ...baseRepository,
-      getAllProjects: async () => [{ ...baseProject }],
-      getSubprojects: async (_pId) => [{ ...baseSubproject, assignee: requestData.userId }],
-      getWorkflowitems: async (_pId, _spId) => [],
+      getUserAssignments: async () => {
+        return { ...baseUserAssignments, subprojects: [assignedSubproject] };
+      },
     });
 
-    // PreconditionError because dummy is assigned for subproject:
+    // PreconditionError because baseUser is assigned for subproject:
     assert.isTrue(Result.isErr(result));
     assert.instanceOf(result, PreconditionError);
   });
 
-  it("If the user is not assigned to a subproject, the user can be disabled", async () => {
-    const result = await disableUser(ctx, bob, orgaA, requestData, {
-      ...baseRepository,
-      getAllProjects: async () => [{ ...baseProject }],
-      getSubprojects: async (_pId) => [{ ...baseSubproject, assignee: undefined }],
-      getWorkflowitems: async (_pId, _spId) => [],
-    });
-    if (Result.isErr(result)) {
-      throw result;
-    }
-    assert.isTrue(Result.isOk(result));
-    assert.isTrue(result.length > 0);
-  });
-
-  // User is still assigned to workflowitem
   it("If the user is assigned to a workflowitem, the user cannot be disabled", async () => {
-    const result = await disableUser(ctx, bob, orgaA, requestData, {
+    const assignedWorkflowitem = { ...baseWorkflowitem, assignee: requestData.userId };
+    const result = await disableUser(ctx, userAdmin, orgaA, requestData, {
       ...baseRepository,
-      getAllProjects: async () => [{ ...baseProject }],
-      getSubprojects: async (_pId) => [{ ...baseSubproject }],
-      getWorkflowitems: async (_pId, _spId) => [
-        { ...baseWorkflowitem, assignee: requestData.userId },
-      ],
+      getUserAssignments: async () => {
+        return { ...baseUserAssignments, workflowitems: [assignedWorkflowitem] };
+      },
     });
 
-    // PreconditionError because dummy is assigned for workflowitem:
+    // PreconditionError because baseUser is assigned for workflowitem:
     assert.isTrue(Result.isErr(result));
     assert.instanceOf(result, PreconditionError);
-  });
-
-  it("If the user is not assigned to a workflowitem, the user can be disabled", async () => {
-    const result = await disableUser(ctx, bob, orgaA, requestData, {
-      ...baseRepository,
-      getAllProjects: async () => [{ ...baseProject }],
-      getSubprojects: async (_pId) => [{ ...baseSubproject }],
-      getWorkflowitems: async (_pId, _spId) => [{ ...baseWorkflowitem, assignee: undefined }],
-    });
-    if (Result.isErr(result)) {
-      throw result;
-    }
-    assert.isTrue(Result.isOk(result));
-    assert.isTrue(result.length > 0);
   });
 });
