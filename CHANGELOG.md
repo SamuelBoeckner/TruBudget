@@ -11,7 +11,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Documentation of how to update/backup a node correctly [#19](https://github.com/openkfw/TruBudget/issues/19)
 
-<!-- ### Changed -->
+### Changed
+
+- Renamed grant/revokePermission to grant/revokeProjectPermission [#406](https://github.com/openkfw/TruBudget/issues/406)
 
 <!-- ### Deprecated -->
 
