@@ -194,7 +194,7 @@ Cypress.Commands.add("updateProjectAssignee", (projectId, identity) => {
     .then(body => Cypress.Promise.resolve(body.data));
 });
 
-Cypress.Commands.add("updateSubrojectAssignee", (projectId, subprojectId, identity) => {
+Cypress.Commands.add("updateSubprojectAssignee", (projectId, subprojectId, identity) => {
   cy.request({
     url: `${baseUrl}/api/subproject.assign`,
     method: "POST",

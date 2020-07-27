@@ -19,8 +19,9 @@ import {
   LOGIN_SUCCESS,
   LOGOUT_SUCCESS,
   SET_LANGUAGE,
-  SHOW_LOGIN_PASSWORD_ERROR,
   SHOW_LOGIN_ACTIVATION_ERROR,
+  SHOW_LOGIN_DATA_ERROR,
+  SHOW_LOGIN_USER_ERROR,
   STORE_ENVIRONMENT_SUCCESS,
   STORE_PASSWORD,
   STORE_USERNAME
@@ -47,7 +48,10 @@ export const defaultState = fromJS({
   enabledUsers: [],
   disabledUsers: [],
   userDisplayNameMap: {},
-  emailServiceAvailable: false
+  emailServiceAvailable: false,
+  loginUserError: false,
+  loginDataError: false,
+  loginActivationError: false
 });
 
 const setTimeLocale = language => {
@@ -97,13 +101,10 @@ export default function loginReducer(state = defaultState, action) {
         }
       });
       return state.merge({
-        // All users: e.g. needed in histories (MAY BE NOT NEEDED ???)
         user: fromJS(action.user),
         groupList: fromJS(groupList),
         userDisplayNameMap: fromJS(userDisplayNameMap),
-        // Only enabled users: e.g. needed for assignee-lists
         enabledUsers: fromJS(enabledUsers),
-        // Only disabled users: e.g. needed to list only disabled users
         disabledUsers: fromJS(disabledUsers)
       });
     case FETCH_ADMIN_USER_SUCCESS:
@@ -128,10 +129,24 @@ export default function loginReducer(state = defaultState, action) {
       return state.merge({
         adminLoggedIn: true
       });
-    case SHOW_LOGIN_PASSWORD_ERROR:
-      return state.set("loginPasswordError", action.show);
+    case SHOW_LOGIN_DATA_ERROR:
+      return state.merge({
+        loginUserError: false,
+        loginDataError: action.show,
+        loginActivationError: false
+      });
+    case SHOW_LOGIN_USER_ERROR:
+      return state.merge({
+        loginUserError: action.show,
+        loginDataError: false,
+        loginActivationError: false
+      });
     case SHOW_LOGIN_ACTIVATION_ERROR:
-      return state.set("loginActivationError", action.show);
+      return state.merge({
+        loginUserError: false,
+        loginDataError: false,
+        loginActivationError: action.show
+      });
     case STORE_ENVIRONMENT_SUCCESS:
     case FETCH_ENVIRONMENT_SUCCESS:
       return state.merge({

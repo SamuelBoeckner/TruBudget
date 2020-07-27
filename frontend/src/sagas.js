@@ -43,8 +43,9 @@ import {
   LOGIN_SUCCESS,
   LOGOUT,
   LOGOUT_SUCCESS,
-  SHOW_LOGIN_PASSWORD_ERROR,
   SHOW_LOGIN_ACTIVATION_ERROR,
+  SHOW_LOGIN_DATA_ERROR,
+  SHOW_LOGIN_USER_ERROR,
   STORE_ENVIRONMENT,
   STORE_ENVIRONMENT_SUCCESS
 } from "./pages/Login/actions";
@@ -794,8 +795,8 @@ export function* loginSaga({ user }) {
       ...data
     });
     yield put({
-      type: SHOW_LOGIN_PASSWORD_ERROR,
-      show: false
+      type: SNACKBAR_MESSAGE,
+      message: ""
     });
     yield put({
       type: SHOW_SNACKBAR,
@@ -807,28 +808,30 @@ export function* loginSaga({ user }) {
 
   function* onLoginError(error) {
     if (error.response.status === 403) {
-      // user is disabled
+      // User is disabled
       yield put({
         type: SHOW_LOGIN_ACTIVATION_ERROR,
         show: true
       });
+    } else if (error.response.status === 500) {
+      // ID or password field is empty
       yield put({
-        type: SHOW_LOGIN_PASSWORD_ERROR,
-        show: false
+        type: SHOW_LOGIN_DATA_ERROR,
+        show: true
       });
-    } else {
-      // password is wrong
+    } else if (error.response.status === 400) {
+      // User not found or password wrong
       yield put({
-        type: SHOW_LOGIN_ACTIVATION_ERROR,
-        show: false
-      });
-      yield put({
-        type: SHOW_LOGIN_PASSWORD_ERROR,
+        type: SHOW_LOGIN_USER_ERROR,
         show: true
       });
     }
-
-    yield handleError(error);
+    yield put({
+      type: SHOW_SNACKBAR,
+      show: true,
+      isError: true,
+      isWarning: false
+    });
   }
   yield execute(login, true, onLoginError);
 }

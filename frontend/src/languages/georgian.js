@@ -53,6 +53,7 @@ const ka = {
     in_review: "განხილვის პროცესშია",
     incorrect_password: "პაროლი არასწორია",
     incorrect_username: "მომხმარებლის სახელი არასწორია",
+    incorrect_username_or_password: "არასწორი შესვლის პირადობა ან პაროლი",
     invalid_tag: "თაგი არასწორია",
     name: "სახელი",
     next: "შემდეგ",
@@ -60,6 +61,7 @@ const ka = {
     no_budget_project: "თქვენი პროექტის ბიუჯეტის დასამატებლად გადადით მთავარ გვერდზე.",
     no_budget_subproject: "თქვენი ქვეპროექტისთვის ბიუჯეტის დასამატებლად გადადით უკან ქვეპროექტის მიმოხილვის გვერდზე.",
     no_budget_distribution: "ბიუჯეტის განაწილება შეუძლებელია თუ ყველა ელემენტი არ ჩანს",
+    no_disabled_users: "დეაქტივირებული მომხმარებელი ვერ მოიძებნა",
     no_groups: "ჯგუფები არ მოიძებნა",
     no_groups_text: "შექმენით ახალი ჯგუფი plus ღილაკის დაჭერით.",
     no_history: "არანაირი მოვლენა",
@@ -105,7 +107,8 @@ const ka = {
     workflowitem: "Workflowitem",
     dueDate: "თარიღით",
     dueDate_exceeded: "დასრულდა თარიღი",
-    login_disabled: "შესვლის იდენტიფიკაცია გამორთულია"
+    login_disabled: "შესვლის იდენტიფიკაცია გამორთულია",
+    login_data_error: "შესვლა პირადობის ან პაროლის ველი ვერ იქნება ცარიელი"
   },
 
   users: {

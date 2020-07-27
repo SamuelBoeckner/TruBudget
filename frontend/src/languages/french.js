@@ -53,6 +53,7 @@ const fr = {
     in_review: "En cours d'examen",
     incorrect_password: "Mot de passe incorrect",
     incorrect_username: "Nom d'utilisateur incorrect",
+    incorrect_username_or_password: "ID de connexion ou mot de passe incorrect",
     invalid_tag: "Tag invalide",
     name: "Nom",
     next: "Suivant",
@@ -61,6 +62,7 @@ const fr = {
     no_budget_subproject:
       "Pour ajouter un budget à votre composante, retournez à la page de présentation du composante.",
     no_budget_distribution: "Impossible d'afficher la distribution si tous les éléments ne sont pas visibles",
+    no_disabled_users: "Aucun utilisateur désactivé trouvé",
     no_groups: "Aucun groupe trouvé",
     no_groups_text: "Créez un nouveau groupe en appuyant sur la touche plus.",
     no_history: "Aucun évenement",
@@ -106,7 +108,8 @@ const fr = {
     workflowitem: "Élement de workflow",
     dueDate: "Date d'échéance",
     dueDate_exceeded: "Date d'échéance dépassée",
-    login_disabled: "L'identification de connexion est désactivée"
+    login_disabled: "L'identification de connexion est désactivée",
+    login_data_error: "Le champ ID de connexion ou mot de passe ne peut pas être vide"
   },
 
   login: {

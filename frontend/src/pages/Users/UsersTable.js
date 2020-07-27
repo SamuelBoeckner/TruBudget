@@ -13,7 +13,7 @@ import _sortBy from "lodash/sortBy";
 import React from "react";
 import strings from "../../localizeStrings";
 import ActionButton from "../Common/ActionButton";
-import { UserEmptyState } from "./UsersGroupsEmptyStates";
+import { EnabledUserEmptyState, DisabledUserEmptyState } from "./UsersGroupsEmptyStates";
 
 const styles = {
   iconColor: {
@@ -38,93 +38,101 @@ const UsersTable = ({
   allowedIntents,
   showSnackbar,
   storeSnackbarMessage,
-  areUsersEnabled = true
+  areUsersEnabled
 }) => {
   let sortedUsers = sortUsers(users.filter(u => u.isGroup !== true));
 
-  return sortedUsers.length > 0 ? (
-    <Paper>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>{strings.common.id}</TableCell>
-            <TableCell>{strings.common.name}</TableCell>
-            <TableCell>{strings.common.organization}</TableCell>
-            <TableCell />
-          </TableRow>
-        </TableHead>
-        {isDataLoading ? null : (
-          <TableBody id="usertablebody">
-            {sortedUsers.map(user => {
-              const canEditPassword =
-                // need to check if user permissions exist yet
-                // to make sure this is compatible with older versions
-                user.permissions &&
-                user.permissions.hasOwnProperty("user.changePassword") &&
-                user.permissions["user.changePassword"].some(x => x === userId);
+  const showUserTable = sortedUsers.length > 0;
+  const showEnabledEmptyState = !showUserTable && areUsersEnabled;
+  const showDisabledEmptyState = !showUserTable && !areUsersEnabled;
 
-              // Define if enable- or disable-button is shown
-              const hasPermission =
-                allowedIntents.includes("global.enableUser") && allowedIntents.includes("global.disableUser");
-              const canEnableUser = !areUsersEnabled && hasPermission;
-              const canDisableUser = areUsersEnabled && hasPermission;
+  if (showUserTable) {
+    return (
+      <Paper>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>{strings.common.id}</TableCell>
+              <TableCell>{strings.common.name}</TableCell>
+              <TableCell>{strings.common.organization}</TableCell>
+              <TableCell />
+            </TableRow>
+          </TableHead>
+          {isDataLoading ? null : (
+            <TableBody id="usertablebody">
+              {sortedUsers.map(user => {
+                const canEditPassword =
+                  // need to check if user permissions exist yet
+                  // to make sure this is compatible with older versions
+                  user.permissions &&
+                  user.permissions.hasOwnProperty("user.changePassword") &&
+                  user.permissions["user.changePassword"].some(x => x === userId);
 
-              return (
-                <TableRow data-test={`user-${user.id}`} key={user.id}>
-                  <TableCell component="th" scope="row">
-                    {user.id}
-                  </TableCell>
-                  <TableCell>{user.displayName}</TableCell>
-                  <TableCell>{user.organization}</TableCell>
-                  <TableCell>
-                    <div style={{ display: "flex" }}>
-                      <ActionButton
-                        notVisible={!permissionIconDisplayed}
-                        onClick={() => showDashboardDialog("editUserPermissions", user.id)}
-                        title={strings.common.show_permissions}
-                        icon={<PermissionIcon />}
-                        data-test={`edit-user-permissions-${user.id}`}
-                      />
-                      <ActionButton
-                        onClick={() => showPasswordDialog(user.id)}
-                        notVisible={!canEditPassword && !isRoot}
-                        title={strings.common.edit}
-                        icon={<EditIcon />}
-                        data-test={`edit-user-${user.id}`}
-                      />
-                      <ActionButton
-                        onClick={() => {
-                          disableUser(user.id);
-                          storeSnackbarMessage(strings.users.disable_user_successfull + user.id);
-                          showSnackbar();
-                        }}
-                        notVisible={!canDisableUser && !(isRoot && areUsersEnabled)}
-                        title={strings.users.disable_user}
-                        icon={<RemoveCircleIcon />}
-                        data-test={`disable-user-${user.id}`}
-                      />
-                      <ActionButton
-                        onClick={() => {
-                          enableUser(user.id);
-                          storeSnackbarMessage(strings.users.enable_user_successfull + user.id);
-                          showSnackbar();
-                        }}
-                        notVisible={!canEnableUser && !(isRoot && !areUsersEnabled)}
-                        title={strings.users.enable_user}
-                        icon={<CheckCircleIcon />}
-                        data-test={`enable-user-${user.id}`}
-                      />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        )}
-      </Table>
-    </Paper>
-  ) : areUsersEnabled ? (
-    <UserEmptyState />
-  ) : null;
+                // Define if enable- or disable-button is shown
+                const hasPermission =
+                  allowedIntents.includes("global.enableUser") && allowedIntents.includes("global.disableUser");
+                const canEnableUser = !areUsersEnabled && hasPermission;
+                const canDisableUser = areUsersEnabled && hasPermission;
+
+                return (
+                  <TableRow data-test={`user-${user.id}`} key={user.id}>
+                    <TableCell component="th" scope="row">
+                      {user.id}
+                    </TableCell>
+                    <TableCell>{user.displayName}</TableCell>
+                    <TableCell>{user.organization}</TableCell>
+                    <TableCell>
+                      <div style={{ display: "flex" }}>
+                        <ActionButton
+                          notVisible={!permissionIconDisplayed}
+                          onClick={() => showDashboardDialog("editUserPermissions", user.id)}
+                          title={strings.common.show_permissions}
+                          icon={<PermissionIcon />}
+                          data-test={`edit-user-permissions-${user.id}`}
+                        />
+                        <ActionButton
+                          onClick={() => showPasswordDialog(user.id)}
+                          notVisible={!canEditPassword && !isRoot}
+                          title={strings.common.edit}
+                          icon={<EditIcon />}
+                          data-test={`edit-user-${user.id}`}
+                        />
+                        <ActionButton
+                          onClick={() => {
+                            disableUser(user.id);
+                            storeSnackbarMessage(strings.users.disable_user_successfull + user.id);
+                            showSnackbar();
+                          }}
+                          notVisible={!canDisableUser && !(isRoot && areUsersEnabled)}
+                          title={strings.users.disable_user}
+                          icon={<RemoveCircleIcon />}
+                          data-test={`disable-user-${user.id}`}
+                        />
+                        <ActionButton
+                          onClick={() => {
+                            enableUser(user.id);
+                            storeSnackbarMessage(strings.users.enable_user_successfull + user.id);
+                            showSnackbar();
+                          }}
+                          notVisible={!canEnableUser && !(isRoot && !areUsersEnabled)}
+                          title={strings.users.enable_user}
+                          icon={<CheckCircleIcon />}
+                          data-test={`enable-user-${user.id}`}
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          )}
+        </Table>
+      </Paper>
+    );
+  } else if (showEnabledEmptyState) {
+    return <EnabledUserEmptyState />;
+  } else if (showDisabledEmptyState) {
+    return <DisabledUserEmptyState />;
+  }
 };
 export default withStyles(styles)(UsersTable);

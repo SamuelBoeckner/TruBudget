@@ -25,6 +25,7 @@ const de = {
     budget: "Budget",
     budget_distribution: "Budget distribution",
     no_budget_distribution: "Verteilung kann nicht angezeigt werden, da nicht alle Elemente sichtbar sind",
+    no_disabled_users: "Keine deaktivierten Benutzer gefunden",
     cancel: "Abbrechen",
     close: "Schließen",
     closed: "German: Closed",
@@ -51,6 +52,7 @@ const de = {
     in_review: "In Review",
     incorrect_password: "Falsches Passwort",
     incorrect_username: "Unbekannte Login-ID",
+    incorrect_username_or_password: "Ungültige Login-ID oder falsches Passwort",
     next: "Next",
     no_budget: "Kein Budget gefunden",
     no_budget_project: "Um ein Budget für Ihr Projekt hinzuzufügen, gehen Sie zurück zur Hauptseite.",
@@ -106,7 +108,8 @@ const de = {
     no_history: "Keine Ereignisse",
     dueDate: "Fälligkeitsdatum",
     dueDate_exceeded: "Fälligkeitsdatum überschritten",
-    login_disabled: "Login-ID ist deaktiviert"
+    login_disabled: "Login-ID ist deaktiviert",
+    login_data_error: "Login-ID oder Passwort kann nicht leer sein"
   },
 
   login: {

@@ -1,5 +1,4 @@
-import React from "react";
-
+import React, { useEffect } from "react";
 import Button from "@material-ui/core/Button";
 import Card from "@material-ui/core/Card";
 import CardHeader from "@material-ui/core/CardHeader";
@@ -12,6 +11,7 @@ import Username from "../Common/Username";
 import Password from "../Common/Password";
 import strings from "../../localizeStrings";
 import Dropdown from "../Common/NewDropdown";
+import NotificationsSnackbar from "../Notifications/NotificationsSnackbar";
 
 const LoginPage = ({
   history,
@@ -21,14 +21,35 @@ const LoginPage = ({
   username,
   password,
   loginWithCredentials,
-  loginPasswordError,
+  loginUserError,
+  loginDataError,
   loginActivationError,
   environment,
   storeEnvironment,
   language,
-  setLanguage
+  setLanguage,
+  showSnackbar,
+  snackbarMessage,
+  snackbarError,
+  snackbarWarning,
+  storeSnackbarMessage,
+  closeSnackbar
 }) => {
   const connectedToAdminNode = -1;
+
+  useEffect(() => {
+    if (loginActivationError) {
+      storeSnackbarMessage(strings.common.login_disabled);
+    } else if (loginUserError) {
+      storeSnackbarMessage(strings.common.incorrect_username_or_password);
+    } else if (loginDataError) {
+      storeSnackbarMessage(strings.common.login_data_error);
+    }
+    return () => {
+      storeSnackbarMessage("");
+    };
+  }, [storeSnackbarMessage, loginActivationError, loginUserError, loginDataError]);
+
   return (
     <div
       data-test="loginpage"
@@ -71,20 +92,22 @@ const LoginPage = ({
           </div>
         </div>
         <Divider />
-        <Username username={username} storeUsername={storeUsername} id="username" />
+        <Username
+          username={username}
+          storeUsername={storeUsername}
+          failed={loginActivationError || loginUserError || loginDataError}
+          id="username"
+        />
         <Password
           password={password}
           iconDisplayed={true}
           storePassword={storePassword}
           setPassword={storePassword}
-          failed={loginPasswordError || loginActivationError}
-          failedText={loginActivationError ? strings.common.login_disabled : strings.common.incorrect_password}
           label={strings.common.password}
+          failed={loginActivationError || loginUserError || loginDataError}
           nextBestAction={() => loginWithCredentials(username, password)}
           id="password"
-          data-test={
-            loginActivationError ? "login-disabled" : loginPasswordError ? "incorrect-password" : "password-field"
-          }
+          data-test="password-field"
         />
         <div
           style={{
@@ -121,6 +144,13 @@ const LoginPage = ({
           </IconButton>
         </div>
       </Card>
+      <NotificationsSnackbar
+        showSnackbar={showSnackbar}
+        snackbarMessage={snackbarMessage}
+        snackbarError={snackbarError}
+        snackbarWarning={snackbarWarning}
+        closeSnackbar={closeSnackbar}
+      />
     </div>
   );
 };

@@ -11,6 +11,7 @@ import {
   storePassword,
   storeUsername
 } from "./actions";
+import { storeSnackbarMessage, hideSnackbar } from "../Notifications/actions";
 import LoginPage from "./LoginPage";
 
 class LoginPageContainer extends Component {
@@ -54,7 +55,9 @@ const mapDispatchToProps = dispatch => {
     storeEnvironment: environment => dispatch(storeEnvironment(environment)),
     getEnvironment: () => dispatch(getEnvironment()),
     setLanguage: language => dispatch(setLanguage(language)),
-    checkEmailService: () => dispatch(checkEmailService())
+    checkEmailService: () => dispatch(checkEmailService()),
+    storeSnackbarMessage: message => dispatch(storeSnackbarMessage(message)),
+    closeSnackbar: () => dispatch(hideSnackbar())
   };
 };
 
@@ -63,10 +66,15 @@ const mapStateToProps = state => {
     username: state.getIn(["login", "username"]),
     jwt: state.getIn(["login", "jwt"]),
     password: state.getIn(["login", "password"]),
-    loginPasswordError: state.getIn(["login", "loginPasswordError"]),
+    loginUserError: state.getIn(["login", "loginUserError"]),
+    loginDataError: state.getIn(["login", "loginDataError"]),
     loginActivationError: state.getIn(["login", "loginActivationError"]),
     environment: state.getIn(["login", "environment"]),
-    language: state.getIn(["login", "language"])
+    language: state.getIn(["login", "language"]),
+    showSnackbar: state.getIn(["notifications", "showSnackbar"]),
+    snackbarMessage: state.getIn(["notifications", "snackbarMessage"]),
+    snackbarError: state.getIn(["notifications", "snackbarError"]),
+    snackbarWarning: state.getIn(["notifications", "snackbarWarning"])
   };
 };
 

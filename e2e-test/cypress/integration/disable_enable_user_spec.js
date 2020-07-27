@@ -59,7 +59,7 @@ describe("Login", function() {
       .get(`[data-test=user-${testUserId}]`)
       .should("not.be.visible");
     // Check disabled-user list
-    cy.get("[aria-label=disabledUsersTab]")
+    cy.get("[data-test=disabledUsersTab]")
       .should("be.visible")
       .click()
       .get(`[data-test=user-${testUserId}]`)
@@ -76,21 +76,21 @@ describe("Login", function() {
     // Enable user
     cy.wait("@disableUser")
       .wait("@userList")
-      .get("[aria-label=disabledUsersTab]")
-      .should("be.visible")
-      .click()
-      .get(`[data-test=enable-user-${testUserId}]`)
+      .get("[data-test=disabledUsersTab]")
       .should("be.visible")
       .click();
+    cy.get(`[data-test=enable-user-${testUserId}]`)
+      .should("be.visible")
+      .click({ force: true });
     // Check user list
     cy.wait("@enableUser")
       .wait("@userList")
-      .get("[aria-label=usersTab]")
+      .get("[data-test=usersTab]")
       .should("be.visible")
       .click();
     cy.get(`[data-test=user-${testUserId}]`).should("be.visible");
     // Check disabled-user list
-    cy.get("[aria-label=disabledUsersTab]")
+    cy.get("[data-test=disabledUsersTab]")
       .should("be.visible")
       .click()
       .get(`[data-test=user-${testUserId}]`)
@@ -99,6 +99,7 @@ describe("Login", function() {
 
   it("Disabled user has to use correct password to see that he has been disabled", function() {
     cy.route("POST", apiRoute + "/global.disableUser").as("disableUser");
+    cy.route("POST", apiRoute + "/user.authenticate").as("login");
     // Disable user
     cy.get(`[data-test=disable-user-${testUserId}]`)
       .should("be.visible")
@@ -109,19 +110,28 @@ describe("Login", function() {
       .get("#logoutbutton")
       .should("be.visible")
       .click();
-    //Login with wrong password
+    // Login with wrong password
     loginViaUi(testUserId, "wrongPassword");
-    cy.get("[data-test=incorrect-password]").should("be.visible");
-    cy.get("[data-test=login-disabled]").should("not.be.visible");
-    //Login with right password
+    cy.wait("@login").then(xhr => {
+      expect(xhr.response.body.error.code).to.eql(400);
+    });
+    cy.get("[data-test=client-snackbar]")
+      .contains("Incorrect login ID or password")
+      .should("be.visible");
+    // Login with right password
     loginViaUi(testUserId, "test");
-    cy.get("[data-test=incorrect-password]").should("not.be.visible");
-    cy.get("[data-test=login-disabled]").should("be.visible");
+    cy.wait("@login").then(xhr => {
+      expect(xhr.response.body.error.code).to.eql(403);
+    });
+    cy.get("[data-test=client-snackbar]")
+      .contains("Login-ID is disabled")
+      .should("be.visible");
   });
 
   it("An enabled user is able to login", function() {
     cy.route("POST", apiRoute + "/global.disableUser").as("disableUser");
     cy.route("POST", apiRoute + "/global.enableUser").as("enableUser");
+    cy.route("POST", apiRoute + "/user.authenticate").as("login");
     // Disable user
     cy.get(`[data-test=disable-user-${testUserId}]`)
       .should("be.visible")
@@ -129,12 +139,12 @@ describe("Login", function() {
     // Enable user
     cy.wait("@disableUser")
       .wait("@userList")
-      .get("[aria-label=disabledUsersTab]")
+      .get("[data-test=disabledUsersTab]")
       .should("be.visible")
       .click()
       .get(`[data-test=enable-user-${testUserId}]`)
       .should("be.visible")
-      .click();
+      .click({ force: true });
     // Logout
     cy.wait("@enableUser")
       .wait("@userList")
@@ -143,15 +153,18 @@ describe("Login", function() {
       .click();
     //Login with wrong password
     loginViaUi(testUserId, "wrongPassword");
-    cy.get("[data-test=incorrect-password]").should("be.visible");
-    cy.get("[data-test=login-disabled]").should("not.be.visible");
+    cy.wait("@login").then(xhr => {
+      expect(xhr.response.body.error.code).to.eql(400);
+    });
+    cy.get("[data-test=client-snackbar]")
+      .contains("Incorrect login ID or password")
+      .should("be.visible");
     //Login with right password
     loginViaUi(testUserId, "test");
-    cy.get("[data-test=login-page]").should("not.be.visible");
-    cy.get("[data-test=openSideNavbar]").should("be.visible");
+    cy.get("#logoutbutton").should("be.visible");
   });
 
-  it("Disabling a user is rejected if the user is still assigned to a project", function() {
+  it("Disabling user is rejected if the user is still assigned to a project", function() {
     cy.route("POST", apiRoute + "/global.disableUser").as("disableUser");
     cy.get(`[data-test=user-${testUserId}]`).should("be.visible");
 

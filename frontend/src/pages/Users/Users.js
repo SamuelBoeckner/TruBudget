@@ -45,13 +45,16 @@ const Users = props => {
     enabledUsers,
     disabledUsers
   } = props;
-  const isCreateButtonDisabled =
-    tabIndex === 0
-      ? !allowedIntents.includes("global.createUser")
-      : tabIndex === 1
-      ? !allowedIntents.includes("global.createGroup")
-      : true;
-  const onClick = () => (tabIndex === 0 ? showDashboardDialog("addUser") : showDashboardDialog("addGroup"));
+  const isEnabledUserTab = tabIndex === 0;
+  const isGroupTab = tabIndex === 1;
+  const isDisabledUserTab = tabIndex === 2;
+  let isCreateButtonDisabled = true;
+  if (isEnabledUserTab) {
+    isCreateButtonDisabled = !allowedIntents.includes("global.createUser");
+  } else if (isGroupTab) {
+    isCreateButtonDisabled = !allowedIntents.includes("global.createGroup");
+  }
+  const onClick = () => (isEnabledUserTab ? showDashboardDialog("addUser") : showDashboardDialog("addGroup"));
   const permissionIconDisplayed = allowedIntents.includes("global.listPermissions");
 
   return (
@@ -64,9 +67,9 @@ const Users = props => {
             indicatorColor="primary"
             textColor="primary"
           >
-            <Tab label={strings.users.users} aria-label="usersTab" />
+            <Tab label={strings.users.users} aria-label="usersTab" data-test="usersTab" />
             <Tab label={strings.users.groups} aria-label="groupsTab" />
-            <Tab label={strings.users.disabled_users} aria-label="disabledUsersTab" />
+            <Tab label={strings.users.disabled_users} aria-label="disabledUsersTab" data-test="disabledUsersTab" />
           </Tabs>
         </AppBar>
         {!isCreateButtonDisabled ? (
@@ -83,7 +86,7 @@ const Users = props => {
             </Fab>
           </div>
         ) : null}
-        {tabIndex === 0 && (
+        {isEnabledUserTab && (
           <UsersTable
             {...props}
             permissionIconDisplayed={permissionIconDisplayed}
@@ -92,12 +95,12 @@ const Users = props => {
           />
         )}
 
-        {isDataLoading ? <div /> : tabIndex === 1 && <GroupTable {...props} />}
+        {isDataLoading ? <div /> : isGroupTab && <GroupTable {...props} />}
 
         {isDataLoading ? (
           <div />
         ) : (
-          tabIndex === 2 && (
+          isDisabledUserTab && (
             <UsersTable
               {...props}
               permissionIconDisplayed={permissionIconDisplayed}

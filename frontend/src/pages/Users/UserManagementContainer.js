@@ -58,7 +58,6 @@ class UserManagementContainer extends Component {
 const mapStateToProps = state => {
   return {
     allowedIntents: state.getIn(["login", "allowedIntents"]),
-    // users: state.getIn(["login", "user"]), //Removed weil alle user sind in enabledUsers+disabledUsers enthalten
     enabledUsers: state.getIn(["login", "enabledUsers"]),
     disabledUsers: state.getIn(["login", "disabledUsers"]),
     userId: state.getIn(["login", "id"]),

@@ -41,10 +41,13 @@ class PermissionSelection extends Component {
   resolveSelections = (userList, permissions) => {
     if (_isEmpty(userList) || _isEmpty(permissions)) return [];
 
-    return permissions
-      .map(id => userList.find(u => u.id === id))
-      .filter(userWithPermission => userWithPermission)
-      .map(u => u.displayName);
+    return permissions.reduce((userdisplaynames, permission) => {
+      const user = userList.find(u => u.id === permission);
+      if (user) {
+        userdisplaynames.push(user.displayName);
+      }
+      return userdisplaynames;
+    }, []);
   };
 
   renderUserSelection = () => {

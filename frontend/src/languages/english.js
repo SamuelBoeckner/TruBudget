@@ -53,6 +53,7 @@ const en = {
     in_review: "In Review",
     incorrect_password: "Incorrect password",
     incorrect_username: "Incorrect login ID",
+    incorrect_username_or_password: "Incorrect login ID or password",
     invalid_tag: "Invalid tag",
     name: "Name",
     next: "Next",
@@ -60,6 +61,7 @@ const en = {
     no_budget_project: "To add a budget for your project, navigate back to the main page.",
     no_budget_subproject: "To add a budget for your subproject, navigate back to the subproject overview page.",
     no_budget_distribution: "Unable to display distribution if not all items are visible",
+    no_disabled_users: "No deactivated users found",
     no_groups: "No groups found",
     no_groups_text: "Create a new group by pressing the plus button.",
     no_history: "No events",
@@ -105,7 +107,8 @@ const en = {
     workflowitem: "Workflowitem",
     dueDate: "Due date",
     dueDate_exceeded: "Due date exceeded",
-    login_disabled: "Login-ID is disabled"
+    login_disabled: "Login-ID is disabled",
+    login_data_error: "Login ID or password field cannot be empty"
   },
 
   users: {
