@@ -1,4 +1,6 @@
+import { VError } from "verror";
 import { Ctx } from "../lib/ctx";
+import * as Result from "../result";
 import * as Cache from "./cache2";
 import { ConnToken } from "./conn";
 import { ServiceUser } from "./domain/organization/service_user";
@@ -11,19 +13,29 @@ export async function markRead(
   conn: ConnToken,
   ctx: Ctx,
   user: ServiceUser,
-  notificationId: Notification.Id,
-): Promise<void> {
-  const { newEvents, errors } = await Cache.withCache(conn, ctx, cache =>
-    NotificationMarkRead.markRead(ctx, user, notificationId, {
-      getUserNotificationEvents: async (userId: UserRecord.Id) => {
-        return cache.getNotificationEvents(userId);
-      },
-    }),
-  );
+  notificationIds: Notification.Id[],
+): Promise<Result.Type<void>> {
+  try {
+    const newEvents = await Promise.all(
+      notificationIds.map(async (id) => {
+        const newEventResult = await Cache.withCache(conn, ctx, (cache) =>
+          NotificationMarkRead.markRead(ctx, user, id, {
+            getUserNotificationEvents: async (userId: UserRecord.Id) => {
+              return cache.getNotificationEvents(userId);
+            },
+          }),
+        );
+        if (Result.isErr(newEventResult)) {
+          throw new VError(newEventResult, "failed to mark notification as read");
+        }
+        return newEventResult;
+      }),
+    );
 
-  if (errors.length > 0) return Promise.reject(errors);
-
-  for (const event of newEvents) {
-    await store(conn, ctx, event);
+    for (const newEvent of newEvents) {
+      await store(conn, ctx, newEvent);
+    }
+  } catch (error) {
+    return error;
   }
 }
