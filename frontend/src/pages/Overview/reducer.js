@@ -6,12 +6,15 @@ import { SEARCH_BAR_DISPLAYED } from "../Navbar/actions";
 import {
   ADD_PROJECT_TAG,
   ADD_TEMPORARY_PROJECT_PERMISSION,
+  BUDGET_AMOUNT,
+  BUDGET_AMOUNT_EDIT,
   CREATE_PROJECT_SUCCESS,
   FETCH_ALL_PROJECTS_SUCCESS,
   FETCH_PROJECT_PERMISSIONS_SUCCESS,
   HIDE_PROJECT_ADDITIONAL_DATA,
   HIDE_PROJECT_DIALOG,
   HIDE_PROJECT_PERMISSIONS,
+  ORGANIZATION,
   PROJECT_COMMENT,
   PROJECT_CREATION_STEP,
   PROJECT_DELETED_PROJECTED_BUDGET,
@@ -60,7 +63,10 @@ const defaultState = fromJS({
   idForInfo: "",
   isProjectAdditionalDataShown: false,
   highlightingRegex: "",
-  searchTerms: []
+  searchTerms: [],
+  budgetAmount: "",
+  budgetAmountEdit: "",
+  organization: ""
 });
 
 export default function overviewReducer(state = defaultState, action) {
@@ -194,6 +200,12 @@ export default function overviewReducer(state = defaultState, action) {
         searchTerms: defaultState.get("searchTerms"),
         highlightingRegex: defaultState.get("highlightingRegex")
       });
+    case BUDGET_AMOUNT:
+      return state.set("budgetAmount", action.budgetAmount);
+    case BUDGET_AMOUNT_EDIT:
+      return state.set("budgetAmountEdit", action.budgetAmountEdit);
+    case ORGANIZATION:
+      return state.set("organization", action.organization);
     default:
       return state;
   }

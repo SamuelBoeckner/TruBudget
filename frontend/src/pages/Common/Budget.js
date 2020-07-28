@@ -118,6 +118,7 @@ export default class Budget extends React.Component {
       deletedProjectedBudgets = [],
       storeProjectedBudget
     } = this.props;
+    const { budgetAmount, budgetAmountEdit, organization } = this.props;
     const currencies = getCurrencies();
     return (
       <div>
@@ -137,8 +138,8 @@ export default class Budget extends React.Component {
                   {this.state.edit && this.state.editIndex === i ? (
                     <TextField
                       label={strings.common.projected_budget}
-                      value={this.state.budgetAmountEdit}
-                      onChange={e => this.setState({ budgetAmountEdit: e.target.value })}
+                      value={budgetAmountEdit}
+                      onChange={e => this.props.storeBudgetAmountEdit(e.target.value)}
                       type="text"
                       aria-label="projectedBudgetAmountEdit"
                       id="amountedit"
@@ -152,7 +153,7 @@ export default class Budget extends React.Component {
                   {this.state.edit && this.state.editIndex === i ? (
                     <Button
                       aria-label="Done"
-                      onClick={() => this.editProjectedBudget(projectedBudgets, budget, this.state.budgetAmountEdit)}
+                      onClick={() => this.editProjectedBudget(projectedBudgets, budget, budgetAmountEdit)}
                       data-test="edit-projected-budget-amount-done"
                     >
                       <DoneIcon />
@@ -182,7 +183,7 @@ export default class Budget extends React.Component {
                 {projectProjectedBudgets !== undefined ? (
                   <DropDown
                     style={styles.dropdown}
-                    value={this.state.organization}
+                    value={organization}
                     floatingLabel={strings.common.organization}
                     onChange={e => this.setOrganization(e)}
                     id="organizations"
@@ -193,7 +194,7 @@ export default class Budget extends React.Component {
                 ) : (
                   <TextField
                     label={strings.common.organization}
-                    value={this.state.organization}
+                    value={organization}
                     onChange={e => this.setOrganization(e.target.value)}
                     type="text"
                     aria-label="organization"
@@ -227,9 +228,9 @@ export default class Budget extends React.Component {
                     disabled={
                       this.state.edit || (projectProjectedBudgets !== undefined && projectProjectedBudgets.length === 0)
                     }
-                    value={this.state.budgetAmount}
+                    value={budgetAmount}
                     onChange={v => {
-                      if (/^[0-9,.-]*$/.test(v.target.value)) this.setState({ budgetAmount: v.target.value });
+                      if (/^[0-9,.-]*$/.test(v.target.value)) this.props.storeBudgetAmount(v.target.value);
                     }}
                     onBlur={e => this.setState({ budgetAmount: toAmountString(e.target.value) })}
                     onFocus={() => this.setState({ budgetAmount: fromAmountString(this.state.budgetAmount) })}

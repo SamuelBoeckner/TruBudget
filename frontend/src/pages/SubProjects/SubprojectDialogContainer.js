@@ -13,6 +13,7 @@ import {
   storeSubProjectProjectedBudgets,
   storeDeletedProjectedBudget
 } from "./actions";
+import { storeBudgetAmount, storeBudgetAmountEdit, storeOrganization } from "../Overview/actions";
 import { storeSnackbarMessage } from "../Notifications/actions";
 
 class SubprojectDialogContainer extends Component {
@@ -28,7 +29,10 @@ const mapStateToProps = state => {
     editDialogShown: state.getIn(["detailview", "editDialogShown"]),
     subProjects: state.getIn(["detailview", "subProjects"]),
     dialogTitle: state.getIn(["detailview", "dialogTitle"]),
-    projectProjectedBudgets: state.getIn(["detailview", "projectProjectedBudgets"])
+    projectProjectedBudgets: state.getIn(["detailview", "projectProjectedBudgets"]),
+    budgetAmount: state.getIn(["overview", "budgetAmount"]),
+    budgetAmountEdit: state.getIn(["overview", "budgetAmountEdit"]),
+    organization: state.getIn(["overview", "organization"])
   };
 };
 
@@ -43,7 +47,10 @@ const mapDispatchToProps = dispatch => {
     storeSubProjectCurrency: currency => dispatch(storeSubProjectCurrency(currency)),
     storeSubProjectProjectedBudgets: projectedBudgets => dispatch(storeSubProjectProjectedBudgets(projectedBudgets)),
     storeSnackbarMessage: message => dispatch(storeSnackbarMessage(message)),
-    storeDeletedProjectedBudget: projectedBudgets => dispatch(storeDeletedProjectedBudget(projectedBudgets))
+    storeDeletedProjectedBudget: projectedBudgets => dispatch(storeDeletedProjectedBudget(projectedBudgets)),
+    storeBudgetAmount: budgetAmount => dispatch(storeBudgetAmount(budgetAmount)),
+    storeBudgetAmountEdit: budgetAmountEdit => dispatch(storeBudgetAmountEdit(budgetAmountEdit)),
+    storeOrganization: organization => dispatch(storeOrganization(organization))
   };
 };
 

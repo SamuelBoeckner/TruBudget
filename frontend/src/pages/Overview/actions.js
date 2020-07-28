@@ -48,6 +48,10 @@ export const STORE_FILTERED_PROJECTS = "STORE_FILTERED_PROJECTS";
 export const STORE_HIGHLIGHTING_REGEX = "STORE_HIGHLIGHTING_REGEX";
 export const STORE_SEARCH_TERMS_AS_ARRAY = "STORE_SEARCH_TERMS_AS_ARRAY";
 
+export const BUDGET_AMOUNT = "BUDGET_AMOUNT";
+export const BUDGET_AMOUNT_EDIT = "BUDGET_AMOUNT_EDIT";
+export const ORGANIZATION = "ORGANIZATION";
+
 export function fetchAllProjects(showLoading = false) {
   return {
     type: FETCH_ALL_PROJECTS,
@@ -137,6 +141,27 @@ export function storeProjectName(name) {
   return {
     type: PROJECT_NAME,
     name: name
+  };
+}
+
+export function storeBudgetAmount(budgetAmount) {
+  return {
+    type: BUDGET_AMOUNT,
+    budgetAmount
+  };
+}
+
+export function storeBudgetAmountEdit(budgetAmountEdit) {
+  return {
+    type: BUDGET_AMOUNT_EDIT,
+    budgetAmountEdit
+  };
+}
+
+export function storeOrganization(organization) {
+  return {
+    type: ORGANIZATION,
+    organization
   };
 }
 

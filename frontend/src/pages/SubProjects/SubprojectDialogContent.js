@@ -56,6 +56,7 @@ const SubprojectDialogContent = props => {
           storeDeletedProjectedBudget={props.storeDeletedProjectedBudget}
           disabled={props.editDialogShown}
           projectProjectedBudgets={props.projectProjectedBudgets}
+          {...props}
         />
       </div>
     </div>

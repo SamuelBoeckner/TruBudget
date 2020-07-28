@@ -9,6 +9,9 @@ import {
   editProject,
   hideProjectDialog,
   setCurrentStep,
+  storeBudgetAmount,
+  storeBudgetAmountEdit,
+  storeOrganization,
   storeProjectComment,
   storeProjectName,
   storeProjectThumbnail,
@@ -33,7 +36,10 @@ const mapStateToProps = state => {
     currentStep: state.getIn(["overview", "currentStep"]),
     projectToAdd: state.getIn(["overview", "projectToAdd"]),
     dialogTitle: state.getIn(["overview", "dialogTitle"]),
-    allowedIntents: state.getIn(["login", "allowedIntents"])
+    allowedIntents: state.getIn(["login", "allowedIntents"]),
+    budgetAmount: state.getIn(["overview", "budgetAmount"]),
+    budgetAmountEdit: state.getIn(["overview", "budgetAmountEdit"]),
+    organization: state.getIn(["overview", "organization"])
   };
 };
 
@@ -51,7 +57,10 @@ const mapDispatchToProps = dispatch => {
     storeDeletedProjectedBudget: projectedBudgets => dispatch(storeDeletedProjectedBudget(projectedBudgets)),
     storeSnackbarMessage: message => dispatch(storeSnackbarMessage(message)),
     addProjectTag: tag => dispatch(addProjectTag(tag)),
-    removeProjectTag: tag => dispatch(removeProjectTag(tag))
+    removeProjectTag: tag => dispatch(removeProjectTag(tag)),
+    storeBudgetAmount: budgetAmount => dispatch(storeBudgetAmount(budgetAmount)),
+    storeBudgetAmountEdit: budgetAmountEdit => dispatch(storeBudgetAmountEdit(budgetAmountEdit)),
+    storeOrganization: organization => dispatch(storeOrganization(organization))
   };
 };
 
