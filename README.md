@@ -21,6 +21,8 @@
 
 TruBudget - a trusted public expenditure tool. A collaborative workflow tool and secured platform to track and coordinate the implementation of donor-funded investment projects. 
 
+To learn more, watch our video introduction on [YouTube](https://www.youtube.com/watch?v=IzYSCoVGZ6c&feature=youtu.be) or read our [article](https://www.kfw-entwicklungsbank.de/PDF/Download-Center/PDF-Dokumente-Medienkooperation-mit-E-Z/2020_04_Digitalisierung_E.pdf#page=5) in The Financial Cooperation magazine.
+
 If you have questions or just want to talk to us, find us on [Gitter](https://gitter.im/Tru-Community/community)!
 
 # Getting Started
