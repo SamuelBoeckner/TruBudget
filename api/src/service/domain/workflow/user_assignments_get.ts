@@ -1,3 +1,4 @@
+import { VError } from "verror";
 import * as Project from "./project";
 import * as Subproject from "./subproject";
 import * as Workflowitem from "./workflowitem";
@@ -16,26 +17,36 @@ interface Repository {
 export async function getUserAssignments(
   userId: string,
   repository: Repository,
-): Promise<UserAssignments.UserAssignments> {
+): Promise<Result.Type<UserAssignments.UserAssignments>> {
   const assignedProjects: Project.Project[] = [];
   const assignedSubprojects: Subproject.Subproject[] = [];
   const assignedWorkflowitems: Workflowitem.Workflowitem[] = [];
 
-  const projects = await repository.getAllProjects();
+  let projects: Project.Project[] = [];
+  try {
+    projects = await repository.getAllProjects();
+  } catch (error) {
+    return new VError(error, "failed to fetch projects");
+  }
+
   for await (const project of projects) {
     if (project.status === "closed") continue;
     if (project.assignee === userId) {
       assignedProjects.push(project);
     }
     const subprojects = await repository.getSubprojects(project.id);
-    if (Result.isErr(subprojects)) continue;
+    if (Result.isErr(subprojects)) {
+      return new VError(subprojects, "failed to fetch subprojects");
+    }
     for await (const subproject of subprojects) {
       if (subproject.status === "closed") continue;
       if (subproject.assignee === userId) {
         assignedSubprojects.push(subproject);
       }
       const workflowitems = await repository.getWorkflowitems(project.id, subproject.id);
-      if (Result.isErr(workflowitems)) continue;
+      if (Result.isErr(workflowitems)) {
+        return new VError(workflowitems, "failed to fetch workflowitems");
+      }
       for await (const workflowitem of workflowitems) {
         if (workflowitem.status === "closed") continue;
         if (workflowitem.assignee === userId) {
@@ -49,9 +60,10 @@ export async function getUserAssignments(
     assignedSubprojects.length === 0 &&
     assignedWorkflowitems.length === 0
   ) {
-    return {};
+    return { userId };
   } else {
     return {
+      userId,
       projects: assignedProjects,
       subprojects: assignedSubprojects,
       workflowitems: assignedWorkflowitems,
@@ -59,10 +71,11 @@ export async function getUserAssignments(
   }
 }
 
-export function toString(assignments: UserAssignments.UserAssignments) {
-  let projects = "";
-  let subprojects = "";
-  let workflowitems = "";
+export function toString(assignments: UserAssignments.UserAssignments): string {
+  let projects: string = "";
+  let subprojects: string = "";
+  let workflowitems: string = "";
+
   if (assignments.projects !== undefined) {
     projects = assignments.projects.reduce((x: string, curr: Project.Project) => {
       return x + curr.displayName + ", ";
@@ -82,4 +95,12 @@ export function toString(assignments: UserAssignments.UserAssignments) {
     );
   }
   return projects + subprojects + workflowitems;
+}
+
+export function hasAssignments(assignments: UserAssignments.UserAssignments): boolean {
+  return (
+    assignments.projects !== undefined ||
+    assignments.subprojects !== undefined ||
+    assignments.workflowitems !== undefined
+  );
 }

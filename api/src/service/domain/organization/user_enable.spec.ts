@@ -9,13 +9,13 @@ import * as GlobalPermissions from "../workflow/global_permissions";
 
 const ctx: Ctx = { requestId: "", source: "test" };
 const root: ServiceUser = { id: "root", groups: [] };
-const adminUser: ServiceUser = { id: "adminUser", groups: [] };
-const testUser: ServiceUser = { id: "testUser", groups: [] };
+const admin: ServiceUser = { id: "admin", groups: [] };
+const member: ServiceUser = { id: "member", groups: [] };
 const orgaA = "orgaA";
 const otherOrganization = "otherOrganization";
 
 const basePermissions: GlobalPermissions.GlobalPermissions = {
-  permissions: { "global.enableUser": ["adminUser"] },
+  permissions: { "global.enableUser": ["admin"] },
   log: [],
 };
 
@@ -43,7 +43,7 @@ const baseRepository = {
 
 describe("enable users: permissions", () => {
   it("Without the global.enableUser permission, a user cannot enable users", async () => {
-    const result = await enableUser(ctx, testUser, orgaA, requestData, {
+    const result = await enableUser(ctx, member, orgaA, requestData, {
       ...baseRepository,
     });
 
@@ -60,7 +60,7 @@ describe("enable users: permissions", () => {
   });
 
   it("A user can enable users if the correct permissions are given", async () => {
-    const result = await enableUser(ctx, adminUser, orgaA, requestData, {
+    const result = await enableUser(ctx, admin, orgaA, requestData, {
       ...baseRepository,
     });
     if (Result.isErr(result)) {
@@ -79,7 +79,7 @@ describe("enable users: permissions", () => {
   });
 
   it("A user cannot enable users from other organizations", async () => {
-    const result = await enableUser(ctx, adminUser, otherOrganization, requestData, {
+    const result = await enableUser(ctx, admin, otherOrganization, requestData, {
       ...baseRepository,
     });
     assert.isTrue(Result.isErr(result));

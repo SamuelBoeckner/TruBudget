@@ -1,6 +1,6 @@
 import Joi = require("joi");
+import { VError } from "verror";
 import isEqual = require("lodash.isequal");
-import isEmpty = require("lodash.isempty");
 import Intent from "../../../authz/intents";
 import { Ctx } from "../../../lib/ctx";
 import * as Result from "../../../result";
@@ -32,7 +32,7 @@ export function validate(input: any): Result.Type<RequestData> {
 interface Repository {
   getUser(userId: string): Promise<Result.Type<UserRecord.UserRecord>>;
   getGlobalPermissions(): Promise<GlobalPermissions.GlobalPermissions>;
-  getUserAssignments(userId: string): Promise<UserAssignments.UserAssignments>;
+  getUserAssignments(userId: string): Promise<Result.Type<UserAssignments.UserAssignments>>;
 }
 
 export async function disableUser(
@@ -86,8 +86,13 @@ export async function disableUser(
     }
   }
 
-  const assignments = await repository.getUserAssignments(userToDisable);
-  if (!isEmpty(assignments)) {
+  const assignments: Result.Type<UserAssignments.UserAssignments> = await repository.getUserAssignments(
+    userToDisable,
+  );
+  if (Result.isErr(assignments)) {
+    return new VError(assignments, "failed to get assignments");
+  }
+  if (UserAssignmentsGet.hasAssignments(assignments)) {
     return new PreconditionError(
       ctx,
       userDisabled,

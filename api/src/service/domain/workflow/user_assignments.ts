@@ -3,7 +3,7 @@ import * as Subproject from "./subproject";
 import * as Workflowitem from "./workflowitem";
 
 export interface UserAssignments {
-  userId?: string;
+  userId: string;
   projects?: Project.Project[];
   subprojects?: Subproject.Subproject[];
   workflowitems?: Workflowitem.Workflowitem[];

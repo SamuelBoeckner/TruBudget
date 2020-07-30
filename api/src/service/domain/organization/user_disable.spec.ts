@@ -14,13 +14,13 @@ import * as Workflowitem from "../workflow/workflowitem";
 
 const ctx: Ctx = { requestId: "", source: "test" };
 const root: ServiceUser = { id: "root", groups: [] };
-const userAdmin: ServiceUser = { id: "userAdmin", groups: [] };
-const normalUser: ServiceUser = { id: "normalUser", groups: [] };
+const admin: ServiceUser = { id: "admin", groups: [] };
+const member: ServiceUser = { id: "member", groups: [] };
 const orgaA = "orgaA";
 const otherOrganization = "otherOrganization";
 
 const basePermissions: GlobalPermissions.GlobalPermissions = {
-  permissions: { "global.disableUser": ["userAdmin"] },
+  permissions: { "global.disableUser": ["admin"] },
   log: [],
 };
 
@@ -89,7 +89,7 @@ const baseWorkflowitem: Workflowitem.Workflowitem = {
   workflowitemType: "general",
 };
 
-const baseUserAssignments: UserAssignments.UserAssignments = {};
+const baseUserAssignments: UserAssignments.UserAssignments = { userId: "baseUser" };
 
 const baseRepository = {
   getGlobalPermissions: async () => basePermissions,
@@ -99,7 +99,7 @@ const baseRepository = {
 
 describe("Disable users: permissions", () => {
   it("Without the global.disableUser permission, a user cannot disable users", async () => {
-    const result = await disableUser(ctx, normalUser, orgaA, requestData, {
+    const result = await disableUser(ctx, member, orgaA, requestData, {
       ...baseRepository,
     });
 
@@ -116,7 +116,7 @@ describe("Disable users: permissions", () => {
   });
 
   it("A user can disable users if the correct permissions are given", async () => {
-    const result = await disableUser(ctx, userAdmin, orgaA, requestData, {
+    const result = await disableUser(ctx, admin, orgaA, requestData, {
       ...baseRepository,
     });
     if (Result.isErr(result)) {
@@ -135,7 +135,7 @@ describe("Disable users: permissions", () => {
   });
 
   it("A user cannot disable users from other organizations", async () => {
-    const result = await disableUser(ctx, userAdmin, otherOrganization, requestData, {
+    const result = await disableUser(ctx, admin, otherOrganization, requestData, {
       ...baseRepository,
     });
     assert.isTrue(Result.isErr(result));
@@ -146,7 +146,7 @@ describe("Disable users: permissions", () => {
 describe("Disable users: Check Assigments", () => {
   it("If the user is assigned to a project, the user cannot be disabled", async () => {
     const assignedProject = { ...baseProject, assignee: requestData.userId };
-    const result = await disableUser(ctx, userAdmin, orgaA, requestData, {
+    const result = await disableUser(ctx, admin, orgaA, requestData, {
       ...baseRepository,
       getUserAssignments: async () => {
         return { ...baseUserAssignments, projects: [assignedProject] };
@@ -159,7 +159,7 @@ describe("Disable users: Check Assigments", () => {
   });
 
   it("If the user is not assigned to any project/subproject/workflowitem, the user can be disabled", async () => {
-    const result = await disableUser(ctx, userAdmin, orgaA, requestData, {
+    const result = await disableUser(ctx, admin, orgaA, requestData, {
       ...baseRepository,
       getUserAssignments: async () => {
         return { ...baseUserAssignments };
@@ -174,7 +174,7 @@ describe("Disable users: Check Assigments", () => {
 
   it("If the user is assigned to a subproject, the user cannot be disabled", async () => {
     const assignedSubproject = { ...baseSubproject, assignee: requestData.userId };
-    const result = await disableUser(ctx, userAdmin, orgaA, requestData, {
+    const result = await disableUser(ctx, admin, orgaA, requestData, {
       ...baseRepository,
       getUserAssignments: async () => {
         return { ...baseUserAssignments, subprojects: [assignedSubproject] };
@@ -188,7 +188,7 @@ describe("Disable users: Check Assigments", () => {
 
   it("If the user is assigned to a workflowitem, the user cannot be disabled", async () => {
     const assignedWorkflowitem = { ...baseWorkflowitem, assignee: requestData.userId };
-    const result = await disableUser(ctx, userAdmin, orgaA, requestData, {
+    const result = await disableUser(ctx, admin, orgaA, requestData, {
       ...baseRepository,
       getUserAssignments: async () => {
         return { ...baseUserAssignments, workflowitems: [assignedWorkflowitem] };

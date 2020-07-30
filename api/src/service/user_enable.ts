@@ -15,13 +15,13 @@ export async function enableUser(
   issuerOrganization: string,
   revokee: UserEnable.RequestData,
 ): Promise<Result.Type<void>> {
-  const result = await UserEnable.enableUser(ctx, issuer, issuerOrganization, revokee, {
+  const newEventsResult = await UserEnable.enableUser(ctx, issuer, issuerOrganization, revokee, {
     getUser: () => UserQuery.getUser(conn, ctx, issuer, revokee.userId),
     getGlobalPermissions: async () => getGlobalPermissions(conn, ctx, issuer),
   });
-  if (Result.isErr(result)) return new VError(result, "failed to enable user");
-
-  for (const event of result) {
+  if (Result.isErr(newEventsResult)) return new VError(newEventsResult, "failed to enable user");
+  const newEvents = newEventsResult;
+  for (const event of newEvents) {
     await store(conn, ctx, event);
   }
 }

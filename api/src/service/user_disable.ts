@@ -17,16 +17,16 @@ export async function disableUser(
   issuerOrganization: string,
   revokee: UserDisable.RequestData,
 ): Promise<Result.Type<void>> {
-  const result = await Cache.withCache(conn, ctx, async (cache) =>
+  const newEventsResult = await Cache.withCache(conn, ctx, async (cache) =>
     UserDisable.disableUser(ctx, issuer, issuerOrganization, revokee, {
       getUser: () => UserQuery.getUser(conn, ctx, issuer, revokee.userId),
       getGlobalPermissions: async () => getGlobalPermissions(conn, ctx, issuer),
       getUserAssignments: async () => getUserAssignments(conn, ctx, revokee),
     }),
   );
-  if (Result.isErr(result)) return new VError(result, "failed to disable user");
-
-  for (const event of result) {
+  if (Result.isErr(newEventsResult)) return new VError(newEventsResult, "failed to disable user");
+  const newEvents = newEventsResult;
+  for (const event of newEvents) {
     await store(conn, ctx, event);
   }
 }
